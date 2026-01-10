@@ -1,7 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async redirects() {
+    return [
+      {
+        source: "/api/auth/verify-email",
+        destination: "/auth/verify-email",
+        permanent: true,
+      },
+      {
+        source: "/api/auth/reset-password/:token",
+        destination: "/auth/reset-password/:token",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

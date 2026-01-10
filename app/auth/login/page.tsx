@@ -1,5 +1,5 @@
 "use client";
-import { signUp, useSession } from "@/lib/auth-client";
+import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,10 +13,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-export default function Register() {
+export default function Login() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -25,20 +26,19 @@ export default function Register() {
       e.preventDefault();
       setLoading(true);
       const formData = new FormData(e.currentTarget);
-      const name = formData.get("name") as string;
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
-      console.log(name, email, password);
-      const { data, error } = await signUp.email({
+
+      const { error } = await signIn.email({
         email,
         password,
-        name,
         callbackURL: "/",
       });
+
       if (error) {
-        toast.error(error.message);
+        toast.error(error.message || "Failed to login");
       } else {
-        toast.success("Registered successfully");
+        toast.success("Logged in successfully");
         router.push("/");
       }
     } catch (error) {
@@ -50,28 +50,18 @@ export default function Register() {
 
   return (
     <div className="w-screen h-screen flex justify-center items-center">
-      <Card className="w-full  max-w-sm">
+      <Card className="w-full max-w-sm">
         <CardHeader>
           <div className="flex flex-col gap-2">
-            <CardTitle>Sign Up</CardTitle>
+            <CardTitle>Login</CardTitle>
             <CardDescription>
-              Enter your email below to sign up to your account
+              Enter your email below to login to your account
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleFormSubmission}>
             <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="John Doe"
-                  required
-                />
-              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -85,12 +75,12 @@ export default function Register() {
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
+                  <Link
+                    href="/auth/forget-password"
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                   >
                     Forgot your password?
-                  </a>
+                  </Link>
                 </div>
                 <Input id="password" name="password" type="password" required />
               </div>
@@ -107,14 +97,17 @@ export default function Register() {
               form?.requestSubmit();
             }}
           >
-            {loading ? "Signing up..." : "Sign Up"}
+            {loading ? "Logging in..." : "Login"}
           </Button>
           <Button variant="outline" className="w-full" disabled={loading}>
-            Sign Up with Google
+            Login with Google
           </Button>
           <CardAction>
-            <Button variant="link" onClick={() => router.push("/auth/login")}>
-              Already have an account? Login
+            <Button
+              variant="link"
+              onClick={() => router.push("/auth/register")}
+            >
+              Don&apos;t have an account? Sign Up
             </Button>
           </CardAction>
         </CardFooter>
