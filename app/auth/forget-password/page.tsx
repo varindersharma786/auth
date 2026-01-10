@@ -28,8 +28,8 @@ export default function Login() {
       const email = formData.get("email") as string;
 
       const { error } = await requestPasswordReset({
-        email,
-        redirectTo: "/auth/login",
+        email
+       
       });
 
       if (error) {
