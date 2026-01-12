@@ -1,5 +1,5 @@
 "use client";
-import { signUp, useSession } from "@/lib/auth-client";
+import { signUp } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Register() {
   const [loading, setLoading] = useState(false);
@@ -28,8 +29,12 @@ export default function Register() {
       const name = formData.get("name") as string;
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
-      console.log(name, email, password);
-      const { data, error } = await signUp.email({
+      const terms = formData.get("terms") as string;
+      if (!terms) {
+        toast.error("Please accept terms and conditions");
+        return;
+      }
+      const { error } = await signUp.email({
         email,
         password,
         name,
@@ -83,16 +88,17 @@ export default function Register() {
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input id="password" name="password" type="password" required />
+              </div>
+              <div className="flex flex-col items-start gap-3">
+                <Label htmlFor="terms">
+                  <Checkbox id="terms" name="terms" /> Accept terms and conditions
+                </Label>
+                <p className="text-muted-foreground text-sm">
+                  By clicking this checkbox, you agree to the terms and
+                  conditions.
+                </p>
               </div>
             </div>
           </form>
@@ -108,9 +114,6 @@ export default function Register() {
             }}
           >
             {loading ? "Signing up..." : "Sign Up"}
-          </Button>
-          <Button variant="outline" className="w-full" disabled={loading}>
-            Sign Up with Google
           </Button>
           <CardAction>
             <Button variant="link" onClick={() => router.push("/auth/login")}>

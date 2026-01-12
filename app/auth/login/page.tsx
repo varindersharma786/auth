@@ -99,9 +99,6 @@ export default function Login() {
           >
             {loading ? "Logging in..." : "Login"}
           </Button>
-          <Button variant="outline" className="w-full" disabled={loading}>
-            Login with Google
-          </Button>
           <CardAction>
             <Button
               variant="link"
