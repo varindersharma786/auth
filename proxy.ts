@@ -22,8 +22,9 @@ export default async function proxy(request: NextRequest) {
 
     // RBAC for admin routes
     if (request.nextUrl.pathname.startsWith("/admin")) {
-        if (user.role !== "admin") {
-            return NextResponse.redirect(new URL("/", request.url));
+        // Checking for 'admin' or 'ADMIN' depending on your backend role casing
+        if (user.role?.toLowerCase() !== "admin") {
+            return NextResponse.redirect(new URL("/unauthorized", request.url));
         }
     }
 

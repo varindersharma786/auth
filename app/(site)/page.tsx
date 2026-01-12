@@ -14,7 +14,7 @@ export default function Home() {
           {session && (
             <p className="text-sm text-zinc-500">
               You are logged in as{" "}
-              <span className="font-bold">{(session.user as any).role}</span>
+              <span className="font-bold">{(session.user).role}</span>
             </p>
           )}
           <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">

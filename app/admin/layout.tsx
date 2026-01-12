@@ -7,10 +7,9 @@ export default function SiteLayout({
   children: React.ReactNode
 }) {
   return (
-    <>
+    <div>
       <SiteHeader />
       <main className="min-h-screen">{children}</main>
-      
-    </>
+    </div>
   )
 }
