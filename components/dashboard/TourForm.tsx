@@ -21,6 +21,8 @@ import {
   Package,
 } from "lucide-react";
 
+import ImageUpload from "@/components/admin/ImageUpload";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,7 +57,7 @@ import { toast } from "sonner";
 
 import { createTour, updateTour, getTour } from "@/lib/api";
 
-const tourSchema = z.z.object({
+const tourSchema = z.object({
   code: z.string().min(1, "Code is required"),
   title: z.string().min(3, "Title must be at least 3 characters"),
   slug: z.string().min(1, "Slug is required"),
@@ -98,6 +100,11 @@ const tourSchema = z.z.object({
       notes: z.string().optional(),
     })
   ),
+  images: z.array(z.string()).default([]),
+  mapImage: z.string().optional(),
+  overview: z.string().optional(),
+  inclusions: z.array(z.string()).default([]),
+  exclusions: z.array(z.string()).default([]),
 });
 
 type TourFormValues = z.infer<typeof tourSchema>;
@@ -133,6 +140,11 @@ export default function TourForm({ params }: TourFormProps) {
       highlight: [],
       accommodation: [],
       tripExtras: [],
+      images: [],
+      mapImage: "",
+      overview: "",
+      inclusions: [],
+      exclusions: [],
     },
   });
 
@@ -487,6 +499,55 @@ export default function TourForm({ params }: TourFormProps) {
                                   }
                                 />
                               </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </CardContent>
+                  </Card>
+
+                  <Card className="mt-6 border-none shadow-premium bg-zinc-50/50 dark:bg-zinc-900/50">
+                    <CardHeader>
+                      <CardTitle className="text-2xl">Media</CardTitle>
+                      <CardDescription>
+                        Upload images for the gallery and map.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid gap-6">
+                      <FormField
+                        control={form.control}
+                        name="images"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Gallery Images (Drag & Drop to Reorder)
+                            </FormLabel>
+                            <FormControl>
+                              <ImageUpload
+                                value={field.value}
+                                onChange={field.onChange}
+                                disabled={isLoading}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="mapImage"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Map Image</FormLabel>
+                            <FormControl>
+                              <ImageUpload
+                                value={field.value ? [field.value] : []}
+                                onChange={(urls) =>
+                                  field.onChange(urls[0] || "")
+                                }
+                                disabled={isLoading}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

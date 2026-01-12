@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 export const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 const api = axios.create({
@@ -79,6 +78,30 @@ export interface Tour {
   tripExtras: TripExtra[];
 }
 
+// Input types where ID is optional for nested items (for creation/updates)
+export interface ItineraryInput extends Omit<Itinerary, "id"> {
+  id?: string;
+}
+
+export interface HighlightInput extends Omit<Highlight, "id"> {
+  id?: string;
+}
+
+export interface AccommodationInput extends Omit<Accommodation, "id"> {
+  id?: string;
+}
+
+export interface TripExtraInput extends Omit<TripExtra, "id"> {
+  id?: string;
+}
+
+export interface TourInput extends Omit<Tour, "id" | "createdAt" | "updatedAt" | "itinerary" | "highlight" | "accommodation" | "tripExtras"> {
+  itinerary: ItineraryInput[];
+  highlight: HighlightInput[];
+  accommodation: AccommodationInput[];
+  tripExtras: TripExtraInput[];
+}
+
 export const getTours = async (): Promise<Tour[]> => {
   const { data } = await api.get("/api/tours");
   return data;
@@ -94,12 +117,12 @@ export const getTourBySlug = async (slug: string): Promise<Tour> => {
   return data;
 };
 
-export const createTour = async (tour: Omit<Tour, "id" | "createdAt" | "updatedAt">) => {
+export const createTour = async (tour: TourInput) => {
   const { data } = await api.post("/api/tours", tour);
   return data;
 };
 
-export const updateTour = async (id: string, tour: Partial<Tour>) => {
+export const updateTour = async (id: string, tour: Partial<TourInput>) => {
   const { data } = await api.put(`/api/tours/${id}`, tour);
   return data;
 };
