@@ -256,7 +256,11 @@ export default function TourForm({ params }: TourFormProps) {
 
             <AnimatePresence mode="wait">
               {/* General Tab */}
-              <TabsContent value="general" className="mt-6 space-y-6">
+              <TabsContent
+                key="general"
+                value="general"
+                className="mt-6 space-y-6"
+              >
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -502,7 +506,11 @@ export default function TourForm({ params }: TourFormProps) {
               </TabsContent>
 
               {/* Itinerary Tab */}
-              <TabsContent value="itinerary" className="mt-6 space-y-6">
+              <TabsContent
+                key="itinerary"
+                value="itinerary"
+                className="mt-6 space-y-6"
+              >
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -643,7 +651,11 @@ export default function TourForm({ params }: TourFormProps) {
               </TabsContent>
 
               {/* Details Tab (Highlights & Accommodations) */}
-              <TabsContent value="details" className="mt-6 space-y-6">
+              <TabsContent
+                key="details"
+                value="details"
+                className="mt-6 space-y-6"
+              >
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -877,7 +889,11 @@ export default function TourForm({ params }: TourFormProps) {
               </TabsContent>
 
               {/* Extras Tab */}
-              <TabsContent value="extras" className="mt-6 space-y-6">
+              <TabsContent
+                key="extras"
+                value="extras"
+                className="mt-6 space-y-6"
+              >
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}

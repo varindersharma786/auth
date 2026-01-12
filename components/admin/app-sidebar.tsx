@@ -37,39 +37,40 @@ import { useState } from "react";
 const items = [
   {
     title: "Dashboard",
-    url: "/dashboard",
+    url: "/admin",
     icon: LayoutDashboard,
   },
   {
     title: "Users",
     icon: Users,
+    url: "/admin/users",
   },
   {
     title: "Tours",
     icon: Route,
     children: [
-      { title: "All Tours", url: "/tours" },
-      { title: "Categories", url: "/tours/categories" },
+      { title: "All Tours", url: "/admin/tours" },
+      { title: "Categories", url: "/admin/tours/categories" },
     ],
   },
   {
     title: "Bookings",
-    url: "/bookings",
+    url: "/admin/bookings",
     icon: Calendar1,
   },
   {
     title: "Payments",
-    url: "/payments",
+    url: "/admin/payments",
     icon: CreditCard,
   },
   {
     title: "Profile",
-    url: "/profile",
+    url: "/admin/profile",
     icon: User,
   },
   {
     title: "Settings",
-    url: "/settings",
+    url: "/admin/settings",
     icon: Settings,
   },
 ]

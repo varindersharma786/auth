@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Plus,
@@ -31,28 +31,40 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { getTours, deleteTour } from "@/lib/api";
+import { getTours, deleteTour, Tour } from "@/lib/api";
 import { toast } from "sonner";
 
 export default function ToursPage() {
-  const queryClient = useQueryClient();
+  const [tours, setTours] = useState<Tour[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // React Query v5 syntax
-  const { data: tours = [], isLoading } = useQuery({
-    queryKey: ["tours"],
-    queryFn: getTours,
-  });
+  const fetchTours = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getTours();
+      setTours(data);
+    } catch (err) {
+      toast.error("Failed to load tours");
+      setTours([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const deleteMutation = useMutation({
-    mutationFn: deleteTour,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tours"] });
+  useEffect(() => {
+    fetchTours();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteTour(id);
       toast.success("Tour deleted successfully");
-    },
-    onError: () => {
+      // Optimistic update: remove from local state immediately
+      setTours((prev) => prev.filter((tour) => tour.id !== id));
+    } catch (err) {
       toast.error("Failed to delete tour");
-    },
-  });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -63,7 +75,7 @@ export default function ToursPage() {
   }
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
+    <div className="p-8 space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-4xl font-extrabold tracking-tight">
@@ -75,7 +87,6 @@ export default function ToursPage() {
         </div>
         <Button
           asChild
-          className="rounded-full px-6 shadow-lg hover:shadow-xl transition-all"
         >
           <Link href="/admin/tours/create-tour">
             <Plus className="mr-2 h-5 w-5" /> Create New Tour
@@ -126,7 +137,7 @@ export default function ToursPage() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-destructive"
-                        onClick={() => deleteMutation.mutate(tour.id)}
+                        onClick={() => handleDelete(tour.id)}
                       >
                         <Trash2 className="mr-2 h-4 w-4" /> Delete Tour
                       </DropdownMenuItem>

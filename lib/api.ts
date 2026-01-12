@@ -1,6 +1,27 @@
 import axios from "axios";
 
-export const API_BASE =process.env.NEXT_PUBLIC_API_URL;
+
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+const api = axios.create({
+  baseURL: API_BASE,
+  withCredentials: true,
+});
+
+api.interceptors.request.use(async (config) => {
+  try {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("bearer_token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching session for API request:", error);
+  }
+  return config;
+});
+
 export interface Itinerary {
   id: string;
   day: number;
@@ -45,6 +66,11 @@ export interface Tour {
   currency: string;
   mealsIncluded: boolean;
   transport: string;
+  overview?: string;
+  images: string[];
+  mapImage?: string;
+  inclusions: string[];
+  exclusions: string[];
   createdAt: string;
   updatedAt: string;
   itinerary: Itinerary[];
@@ -54,26 +80,31 @@ export interface Tour {
 }
 
 export const getTours = async (): Promise<Tour[]> => {
-  const { data } = await axios.get(`${API_BASE}/tours`);
+  const { data } = await api.get("/api/tours");
   return data;
 };
 
 export const getTour = async (id: string): Promise<Tour> => {
-  const { data } = await axios.get(`${API_BASE}/tours/${id}`);
+  const { data } = await api.get(`/api/tours/${id}`);
+  return data;
+};
+
+export const getTourBySlug = async (slug: string): Promise<Tour> => {
+  const { data } = await api.get(`/api/tours/slug/${slug}`);
   return data;
 };
 
 export const createTour = async (tour: Omit<Tour, "id" | "createdAt" | "updatedAt">) => {
-  const { data } = await axios.post(`${API_BASE}/tours`, tour);
+  const { data } = await api.post("/api/tours", tour);
   return data;
 };
 
 export const updateTour = async (id: string, tour: Partial<Tour>) => {
-  const { data } = await axios.put(`${API_BASE}/tours/${id}`, tour);
+  const { data } = await api.put(`/api/tours/${id}`, tour);
   return data;
 };
 
 export const deleteTour = async (id: string) => {
-  const { data } = await axios.delete(`${API_BASE}/tours/${id}`);
+  const { data } = await api.delete(`/api/tours/${id}`);
   return data;
 };

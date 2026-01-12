@@ -29,11 +29,19 @@ export default function Login() {
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
 
-      const { error } = await signIn.email({
-        email,
-        password,
-        callbackURL: "/",
-      });
+      const { error } = await signIn.email(
+        {
+          email,
+          password,
+          callbackURL: "/",
+        },
+        {
+          onSuccess: (ctx) => {
+            const authToken = ctx.response.headers.get("set-auth-token");
+            localStorage.setItem("bearer_token", authToken);
+          },
+        }
+      );
 
       if (error) {
         toast.error(error.message || "Failed to login");
