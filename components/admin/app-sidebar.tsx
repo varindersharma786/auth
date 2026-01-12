@@ -9,6 +9,7 @@ import {
   Users,
   LayoutDashboard,
   ChevronRight,
+  User,
 } from "lucide-react";
 
 import {
@@ -61,6 +62,16 @@ const items = [
     url: "/payments",
     icon: CreditCard,
   },
+  {
+    title: "Profile",
+    url: "/profile",
+    icon: User,
+  },
+  {
+    title: "Settings",
+    url: "/settings",
+    icon: Settings,
+  },
 ]
 
 export default function AppSidebar() {
@@ -89,7 +100,7 @@ export default function AppSidebar() {
         </span>
       </SidebarHeader>
 
-      <Separator />
+      {/* <Separator /> */}
 
       {/* ───────── CONTENT ───────── */}
       <SidebarContent>
@@ -149,20 +160,13 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <Separator />
+      <div className="w-[90%] mx-auto">
+        <Separator />
+      </div>
 
       {/* ───────── FOOTER ───────── */}
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Settings">
-              <Settings className="h-4 w-4" />
-              <span className="group-data-[collapsible=icon]:hidden">
-                Settings
-              </span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-
           <SidebarMenuItem>
             <SidebarMenuButton tooltip="Logout" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" />

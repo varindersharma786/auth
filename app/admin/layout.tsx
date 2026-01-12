@@ -1,6 +1,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/admin/app-sidebar";
 import AdminHeader from "@/components/admin/admin-header";
+import AdminFooter from "@/components/admin/admin-footer";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,6 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 flex-col">
         <AdminHeader />
         <main className="flex-1 p-6">{children}</main>
+        <AdminFooter />
       </div>
     </SidebarProvider>
   );

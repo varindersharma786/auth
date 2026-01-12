@@ -14,7 +14,7 @@ const ThemeSwitcher = () => {
     <div>
       {theme === "light" && (
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={() => handleThemeChange("dark")}
         >
@@ -23,7 +23,7 @@ const ThemeSwitcher = () => {
       )}
       {theme === "dark" && (
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={() => handleThemeChange("light")}
         >

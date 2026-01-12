@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Bell, Search, User } from "lucide-react";
 import { usePathname } from "next/navigation";
+import ThemeSwitcher from "@/components/custom/theme-switcher";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -45,6 +46,7 @@ export default function AdminHeader() {
             <Input placeholder="Search..." className="pl-8 w-64" />
           </div>
         </div>
+        <ThemeSwitcher/>
 
         {/* Notifications */}
         <Button variant="ghost" size="icon">
