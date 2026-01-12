@@ -19,6 +19,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import ThemeSwitcher from "./theme-switcher";
+import MenuDrawer from "./menu-drawer";
 
 export function SiteHeader() {
   const { data: session } = authClient.useSession();
@@ -68,7 +69,7 @@ export function SiteHeader() {
         </div>
 
         {/* Icons */}
-        <div className="flex items-center gap-2">
+        <div className=" items-center gap-2 hidden md:flex">
           <Button variant="ghost" size="icon">
             <Heart className="h-5 w-5" />
           </Button>
@@ -106,6 +107,9 @@ export function SiteHeader() {
           <Button variant="ghost" size="icon" className="relative">
             <PhoneCall className="h-5 w-5" />
           </Button>
+        </div>
+        <div className="flex md:hidden">
+            <MenuDrawer/>
         </div>
       </div>
     </header>

@@ -21,7 +21,7 @@ export function RoleGuard({
 
   if (
     !session ||
-    !allowedRoles.includes((session.user as any).role as string)
+    !allowedRoles.includes((session.user as { role: string }).role)
   ) {
     return fallback;
   }

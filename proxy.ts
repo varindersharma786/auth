@@ -18,7 +18,7 @@ export default async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/auth/login", request.url));
     }
 
-    const user = (session as any).user;
+    const user = (session as unknown as { user: { role: string } }).user;
 
     // RBAC for admin routes
     if (request.nextUrl.pathname.startsWith("/admin")) {
