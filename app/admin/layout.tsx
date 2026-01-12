@@ -6,11 +6,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
+      <div className="flex flex-1 flex-col">
         <AdminHeader />
-
-        {children}
-      </main>
+        <main className="flex-1 p-6">{children}</main>
+      </div>
     </SidebarProvider>
   );
 }
