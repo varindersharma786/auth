@@ -1,15 +1,16 @@
-import { SiteHeader } from "@/components/custom/site-header"
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppSidebar from "@/components/admin/app-sidebar";
+import AdminHeader from "@/components/admin/admin-header";
 
-
-export default function SiteLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div>
-      <SiteHeader />
-      <main className="min-h-screen">{children}</main>
-    </div>
-  )
+    <SidebarProvider>
+      <AppSidebar />
+      <main>
+        <AdminHeader />
+
+        {children}
+      </main>
+    </SidebarProvider>
+  );
 }

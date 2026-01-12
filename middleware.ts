@@ -2,11 +2,11 @@ import { betterFetch } from "@better-fetch/fetch";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Session } from "better-auth/types";
 
-export default async function proxy(request: NextRequest) {
-    const { data: session } = await betterFetch<Session>(
+export default async function middleware(request: NextRequest) {
+    const { data } = await betterFetch<{ session: Session; user: { role: string } }>(
         "/api/auth/get-session",
         {
-            baseURL: request.nextUrl.origin,
+            baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
             headers: {
                 //get the cookie from the request
                 cookie: request.headers.get("cookie") || "",
@@ -14,11 +14,11 @@ export default async function proxy(request: NextRequest) {
         }
     );
 
-    if (!session) {
+    if (!data?.session) {
         return NextResponse.redirect(new URL("/auth/login", request.url));
     }
 
-    const user = (session as unknown as { user: { role: string } }).user;
+    const user = data.user;
 
     // RBAC for admin routes
     if (request.nextUrl.pathname.startsWith("/admin")) {
