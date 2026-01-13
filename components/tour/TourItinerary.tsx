@@ -78,7 +78,7 @@ export default function TourItinerary({ tour }: TourItineraryProps) {
 
         <div className="lg:col-span-1">
           <div className="sticky top-24 space-y-4">
-            <div className="aspect-[3/4] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative shadow-inner border">
+            <div className="aspect-3/4 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative shadow-inner border">
               {tour.mapImage ? (
                 <Image
                   src={tour.mapImage}
