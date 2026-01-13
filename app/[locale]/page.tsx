@@ -1,25 +1,36 @@
 import { authClient } from "@/lib/auth-client";
+import HeroCarousel from "@/components/home/HeroCarousel";
+import SearchSection from "@/components/home/SearchSection";
+import TripTabs from "@/components/home/TripTabs";
+import WhatSetsUsApart from "@/components/home/WhatSetsUsApart";
+import PromoBanner from "@/components/home/PromoBanner";
+import DestinationGrid from "@/components/home/DestinationGrid";
+import SubscriptionSection from "@/components/home/SubscriptionSection";
 
 export default function Home() {
-  const { data: session } = authClient.useSession();
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full flex-col items-center justify-between py-5 px-16 bg-white dark:bg-black sm:items-start">
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            Welcome to the App
-          </h1>
-          {session && (
-            <p className="text-sm text-zinc-500">
-              You are logged in as{" "}
-              <span className="font-bold">{session.user.role}</span>
-            </p>
-          )}
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Your secure authentication setup with Better Auth and RBAC is ready.
-          </p>
-        </div>
+    <div className="min-h-screen bg-white font-sans">
+      <main className="w-full">
+        {/* Hero Section */}
+        <HeroCarousel />
+
+        {/* Search & Stats */}
+        <SearchSection />
+
+        {/* Trip Exploration */}
+        <TripTabs />
+
+        {/* What Sets Us Apart */}
+        <WhatSetsUsApart />
+
+        {/* Promo Banner */}
+        <PromoBanner />
+
+        {/* Destination Grid */}
+        <DestinationGrid />
+
+        {/* Subscription */}
+        <SubscriptionSection />
       </main>
     </div>
   );
