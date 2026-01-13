@@ -1,4 +1,3 @@
-import { authClient } from "@/lib/auth-client";
 import HeroCarousel from "@/components/home/HeroCarousel";
 import SearchSection from "@/components/home/SearchSection";
 import TripTabs from "@/components/home/TripTabs";
