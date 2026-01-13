@@ -32,7 +32,7 @@ export default function SubscriptionSection() {
             </label>
           </div>
           <Button className="h-14 px-12 bg-black hover:bg-zinc-800 text-white rounded-full font-bold text-lg">
-            Let's stay in touch
+            Let&apos;s stay in touch
           </Button>
         </form>
       </div>

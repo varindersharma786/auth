@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -95,7 +94,7 @@ function TripCard({ trip, exchangeRate, symbol }: any) {
 
   return (
     <Card className="group overflow-hidden border-none shadow-none hover:shadow-xl transition-all duration-300 rounded-xl bg-zinc-50/50">
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-4/3 overflow-hidden">
         <Image
           src={trip.image}
           alt={trip.title}
@@ -111,7 +110,7 @@ function TripCard({ trip, exchangeRate, symbol }: any) {
           <Clock className="h-3 w-3" />
           {trip.duration}
         </div>
-        <h3 className="font-bold text-lg mb-2 line-clamp-2 min-h-[3.5rem] group-hover:text-red-600 transition-colors">
+        <h3 className="font-bold text-lg mb-2 line-clamp-2 min-h-14 group-hover:text-red-600 transition-colors">
           {trip.title}
         </h3>
         <div className="flex items-center gap-1 mb-4">

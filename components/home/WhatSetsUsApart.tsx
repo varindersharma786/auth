@@ -12,11 +12,11 @@ export default function WhatSetsUsApart() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <h3 className="text-3xl font-bold">
-              We're all about sharing the joy of travel
+              We&apos;re all about sharing the joy of travel
             </h3>
             <p className="text-lg text-gray-600 leading-relaxed max-w-xl">
-              From our first overland trip back in 1989, we've always been about
-              real-life experiences. Our small group style means you'll stay
+              From our first overland trip back in 1989, we&apos;ve always been about
+              real-life experiences. Our small group style means you&apos;ll stay
               under the radar, travel the local way, eat with the local people
               and sleep in local homes.
             </p>
@@ -27,7 +27,7 @@ export default function WhatSetsUsApart() {
               Find out about us
             </Button>
           </div>
-          <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-premium">
+          <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-premium">
             <Image
               src="/images/home/hero-1.png"
               alt="Joy of travel"
