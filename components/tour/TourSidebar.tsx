@@ -7,15 +7,24 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Calendar, User, Info } from "lucide-react";
+
+import { useCurrency } from "@/context/CurrencyContext";
 
 interface TourSidebarProps {
   tour: Tour;
 }
 
 export default function TourSidebar({ tour }: TourSidebarProps) {
+  const { currency, exchangeRate } = useCurrency();
+
+  const finalPrice = tour.priceFrom * exchangeRate;
+  const formattedPrice = new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: currency,
+  }).format(finalPrice);
+
   return (
     <div className="sticky top-24">
       <Card className="border-none shadow-premium bg-zinc-50/50 dark:bg-zinc-900/50 overflow-hidden">
@@ -28,13 +37,12 @@ export default function TourSidebar({ tour }: TourSidebarProps) {
           <div className="flex justify-between items-baseline mb-2">
             <span className="text-sm text-muted-foreground">From</span>
             <div className="text-right">
-              <span className="text-3xl font-bold block">
-                {tour.currency} {tour.priceFrom}
-              </span>
+              <span className="text-3xl font-bold block">{formattedPrice}</span>
               <span className="text-xs text-muted-foreground">per person</span>
             </div>
           </div>
         </CardHeader>
+
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-sm">

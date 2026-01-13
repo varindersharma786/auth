@@ -8,23 +8,40 @@ import {
 } from "@/components/ui/select";
 import Image from "next/image";
 import Link from "next/link";
-import { FaFacebookF, FaGlobe, FaInstagram, FaLinkedin, FaTiktok, FaX, FaYoutube } from "react-icons/fa6";
+import {
+  FaFacebookF,
+  FaGlobe,
+  FaInstagram,
+  FaLinkedin,
+  FaTiktok,
+  FaX,
+  FaYoutube,
+} from "react-icons/fa6";
+import { useCurrency, COUNTRY_MAP } from "@/context/CurrencyContext";
 
 export default function SiteFooter() {
+  const { countryName, setCountry } = useCurrency();
   return (
     <footer className="bg-[#f5f2ed] text-gray-900 mt-16">
       <div className="max-w-7xl mx-auto px-6 py-12 md:flex md:justify-between md:items-start gap-10">
         {/* Left Section: Region & Subscribe */}
         <div className="md:w-1/4 mb-8 md:mb-0">
           <label className="text-sm mb-2 block">Change region</label>
-          <Select>
+          <Select
+            value={Object.keys(COUNTRY_MAP).find(
+              (key) => COUNTRY_MAP[key].name === countryName
+            )}
+            onValueChange={setCountry}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Global" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="global">Global</SelectItem>
-              <SelectItem value="india">India</SelectItem>
-              <SelectItem value="us">US</SelectItem>
+              {Object.entries(COUNTRY_MAP).map(([code, { name }]) => (
+                <SelectItem key={code} value={code}>
+                  {name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -95,30 +112,36 @@ export default function SiteFooter() {
       {/* Bottom Section */}
       <div className="border-t border-gray-300 mt-8 py-6 flex flex-col sm:flex-row items-center justify-between px-6 max-w-7xl mx-auto">
         <div className="mb-4 sm:mb-0">
-          <Image src="/b-corp-logo.png" alt="B Corporation" className="h-10" width={100} height={100} />
+          <Image
+            src="/b-corp-logo.png"
+            alt="B Corporation"
+            className="h-10"
+            width={100}
+            height={100}
+          />
         </div>
 
         <div className="flex gap-4 text-xl">
           <Link href="#" aria-label="Facebook">
-          <FaFacebookF />
+            <FaFacebookF />
           </Link>
           <Link href="#" aria-label="Instagram">
-          <FaInstagram />
+            <FaInstagram />
           </Link>
           <Link href="#" aria-label="TikTok">
-          <FaTiktok />
+            <FaTiktok />
           </Link>
           <Link href="#" aria-label="X">
-          <FaX />
+            <FaX />
           </Link>
           <Link href="#" aria-label="YouTube">
-          <FaYoutube />
+            <FaYoutube />
           </Link>
           <Link href="#" aria-label="LinkedIn">
-          <FaLinkedin />
+            <FaLinkedin />
           </Link>
           <Link href="#" aria-label="Other">
-          <FaGlobe />
+            <FaGlobe />
           </Link>
         </div>
       </div>
