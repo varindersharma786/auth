@@ -9,6 +9,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useCurrency } from "@/context/CurrencyContext";
 
 interface BookingSidebarProps {
   tour: Tour;
@@ -17,6 +18,18 @@ interface BookingSidebarProps {
 
 export const BookingSidebar = ({ tour }: BookingSidebarProps) => {
   const [isOpen, setIsOpen] = useState(true);
+  const { currency, currencySymbol, exchangeRate } = useCurrency();
+
+  // Price calculations
+  const convert = (amount: number) => amount * exchangeRate;
+  const format = (amount: number) =>
+    new Intl.NumberFormat(undefined, { style: "currency", currency }).format(
+      amount
+    );
+
+  const priceFrom = convert(tour.priceFrom);
+  const discount = convert(725.5);
+  const total = priceFrom - discount;
 
   // Calculate generic dates for demo
   const startDate = new Date();
@@ -111,9 +124,7 @@ export const BookingSidebar = ({ tour }: BookingSidebarProps) => {
               <CollapsibleContent className="space-y-2 mt-2 text-sm text-muted-foreground">
                 <div className="flex justify-between">
                   <span>1 traveller</span>
-                  <span>
-                    {tour.currency} {tour.priceFrom.toLocaleString()}
-                  </span>
+                  <span>{format(priceFrom)}</span>
                 </div>
               </CollapsibleContent>
             </Collapsible>
@@ -144,13 +155,11 @@ export const BookingSidebar = ({ tour }: BookingSidebarProps) => {
             <div className="space-y-2">
               <div className="flex justify-between text-green-600 font-medium">
                 <span>Discount</span>
-                <span>{tour.currency} -725.50</span>
+                <span>-{format(discount)}</span>
               </div>
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>
-                  {tour.currency} {(tour.priceFrom - 725.5).toLocaleString()}
-                </span>
+                <span>{format(total)}</span>
               </div>
               <p className="text-xs text-muted-foreground text-right">
                 GST included
@@ -160,9 +169,7 @@ export const BookingSidebar = ({ tour }: BookingSidebarProps) => {
 
           <div className="pt-4 flex justify-between items-center text-lg font-bold border-t border-zinc-200 dark:border-zinc-800">
             <span>Pay now</span>
-            <span>
-              {tour.currency} {(tour.priceFrom - 725.5).toLocaleString()}
-            </span>
+            <span>{format(total)}</span>
           </div>
 
           <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-md text-xs space-y-2 text-blue-800 dark:text-blue-300">

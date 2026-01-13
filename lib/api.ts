@@ -131,3 +131,20 @@ export const deleteTour = async (id: string) => {
   const { data } = await api.delete(`/api/tours/${id}`);
   return data;
 };
+
+export const createPaymentOrder = async (
+  bookingDetails: any
+): Promise<{ orderID: string; bookingID: string }> => {
+  const { data } = await api.post("/api/payment/orders", bookingDetails);
+  return data;
+};
+
+export const capturePaymentOrder = async (
+  orderID: string,
+  bookingID: string
+): Promise<any> => {
+  const { data } = await api.post(`/api/payment/orders/${orderID}/capture`, {
+    bookingID,
+  });
+  return data;
+};
