@@ -9,6 +9,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Calendar, User, Info } from "lucide-react";
+import Link from "next/link";
 
 import { useCurrency } from "@/context/CurrencyContext";
 
@@ -17,7 +18,7 @@ interface TourSidebarProps {
 }
 
 export default function TourSidebar({ tour }: TourSidebarProps) {
-  const { currency, exchangeRate } = useCurrency();
+  const { currency, exchangeRate, localizeLink } = useCurrency();
 
   const finalPrice = tour.priceFrom * exchangeRate;
   const formattedPrice = new Intl.NumberFormat(undefined, {
@@ -103,9 +104,11 @@ export default function TourSidebar({ tour }: TourSidebarProps) {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
-          <Button className="w-full text-lg py-6 shadow-lg shadow-primary/20">
-            Book Now
-          </Button>
+          <Link href={localizeLink(`/book/${tour.id}`)} className="w-full">
+            <Button className="w-full text-lg py-6 shadow-lg shadow-primary/20">
+              Book Now
+            </Button>
+          </Link>
           <Button variant="outline" className="w-full">
             Download Brochure
           </Button>

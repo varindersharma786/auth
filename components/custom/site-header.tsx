@@ -18,12 +18,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import ThemeSwitcher from "./theme-switcher";
 import MenuDrawer from "./menu-drawer";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export function SiteHeader() {
   const { data: session } = authClient.useSession();
   const router = useRouter();
+  const { localizeLink } = useCurrency();
 
   const handleSignOut = async () => {
     await authClient.signOut({
@@ -40,7 +41,10 @@ export function SiteHeader() {
       <div className=" mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <Link href="/" className="text-xl font-bold tracking-tight">
+          <Link
+            href={localizeLink("/")}
+            className="text-xl font-bold tracking-tight"
+          >
             <Image
               className="dark:invert"
               src="/next.svg"
@@ -53,16 +57,22 @@ export function SiteHeader() {
 
           {/* Navbar */}
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <Link href="/shop" className="hover:text-primary">
+            <Link href={localizeLink("/shop")} className="hover:text-primary">
               Shop
             </Link>
-            <Link href="/categories" className="hover:text-primary">
+            <Link
+              href={localizeLink("/categories")}
+              className="hover:text-primary"
+            >
               Categories
             </Link>
-            <Link href="/deals" className="hover:text-primary">
+            <Link href={localizeLink("/deals")} className="hover:text-primary">
               Deals
             </Link>
-            <Link href="/contact" className="hover:text-primary">
+            <Link
+              href={localizeLink("/contact")}
+              className="hover:text-primary"
+            >
               Contact
             </Link>
           </nav>
@@ -82,10 +92,14 @@ export function SiteHeader() {
             </DropdownMenuTrigger>
             {session ? (
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => router.push("/auth/profile")}>
+                <DropdownMenuItem
+                  onClick={() => router.push(localizeLink("/auth/profile"))}
+                >
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/auth/settings")}>
+                <DropdownMenuItem
+                  onClick={() => router.push(localizeLink("/auth/settings"))}
+                >
                   Settings
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
@@ -94,10 +108,14 @@ export function SiteHeader() {
               </DropdownMenuContent>
             ) : (
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => router.push("/auth/login")}>
+                <DropdownMenuItem
+                  onClick={() => router.push(localizeLink("/auth/login"))}
+                >
                   Login
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/auth/register")}>
+                <DropdownMenuItem
+                  onClick={() => router.push(localizeLink("/auth/register"))}
+                >
                   Register
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -109,7 +127,7 @@ export function SiteHeader() {
           </Button>
         </div>
         <div className="flex md:hidden">
-            <MenuDrawer/>
+          <MenuDrawer />
         </div>
       </div>
     </header>

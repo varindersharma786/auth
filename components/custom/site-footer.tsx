@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -20,7 +21,7 @@ import {
 import { useCurrency, COUNTRY_MAP } from "@/context/CurrencyContext";
 
 export default function SiteFooter() {
-  const { countryName, setCountry } = useCurrency();
+  const { countryName, setCountry, localizeLink } = useCurrency();
   return (
     <footer className="bg-[#f5f2ed] text-gray-900 mt-16">
       <div className="max-w-7xl mx-auto px-6 py-12 md:flex md:justify-between md:items-start gap-10">
@@ -45,9 +46,7 @@ export default function SiteFooter() {
             </SelectContent>
           </Select>
 
-          <p className="mt-4 text-sm">
-            Lorem ipsum dolor sit amet consectetur.
-          </p>
+          <p className="mt-4 text-sm">Stay updated with our latest offers.</p>
           <Button className="mt-4 bg-black text-white hover:bg-gray-800">
             Subscribe to emails
           </Button>
@@ -140,7 +139,7 @@ export default function SiteFooter() {
           <Link href="#" aria-label="LinkedIn">
             <FaLinkedin />
           </Link>
-          <Link href="#" aria-label="Other">
+          <Link href={localizeLink("/")} aria-label="Other">
             <FaGlobe />
           </Link>
         </div>

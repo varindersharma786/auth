@@ -11,8 +11,10 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import Link from "next/link";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function MenuDrawer() {
+  const { localizeLink } = useCurrency();
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>
@@ -29,18 +31,36 @@ export default function MenuDrawer() {
           <DrawerDescription>Set your daily activity goal.</DrawerDescription>
         </DrawerHeader>
 
-        <div className="flex flex-col  justify-center space-x-2 space-y-2 p-4">
-          <Link href="/" className="h-8 w-8 shrink-0 rounded-full">
+        <div className="flex flex-col justify-center space-y-4 p-4">
+          <Link
+            href={localizeLink("/")}
+            className="text-lg font-medium hover:text-primary"
+          >
             Home
           </Link>
-          <Link href="/" className="h-8 w-8 shrink-0 rounded-full">
-            Decrease
+          <Link
+            href={localizeLink("/shop")}
+            className="text-lg font-medium hover:text-primary"
+          >
+            Shop
           </Link>
-          <Link href="/" className="h-8 w-8 shrink-0 rounded-full">
-            Decrease
+          <Link
+            href={localizeLink("/categories")}
+            className="text-lg font-medium hover:text-primary"
+          >
+            Categories
           </Link>
-          <Link href="/" className="h-8 w-8 shrink-0 rounded-full">
-            Decrease
+          <Link
+            href={localizeLink("/deals")}
+            className="text-lg font-medium hover:text-primary"
+          >
+            Deals
+          </Link>
+          <Link
+            href={localizeLink("/contact")}
+            className="text-lg font-medium hover:text-primary"
+          >
+            Contact
           </Link>
         </div>
       </DrawerContent>

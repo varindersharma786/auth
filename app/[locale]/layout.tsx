@@ -1,4 +1,4 @@
-// import SiteFooter from "@/components/custom/site-footer"
+import SiteFooter from "@/components/custom/site-footer"
 import { SiteHeader } from "@/components/custom/site-header"
 
 
@@ -11,7 +11,7 @@ export default function SiteLayout({
     <>
       <SiteHeader />
       <main className="min-h-screen">{children}</main>
-      {/* <SiteFooter /> */}
+      <SiteFooter />
     </>
   )
 }
