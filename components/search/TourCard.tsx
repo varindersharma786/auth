@@ -23,7 +23,7 @@ export function TourCard({ tour }: TourCardProps) {
   return (
     <div className="flex flex-col md:flex-row bg-white rounded-xl overflow-hidden shadow-sm border group h-full">
       {/* Image Container */}
-      <div className="relative w-full md:w-[300px] aspect-[4/3] md:aspect-auto overflow-hidden">
+      <div className="relative w-full md:w-[300px] aspect-4/3 md:aspect-auto overflow-hidden">
         <Image
           src={tour.images?.[0] || "/placeholder-tour.jpg"}
           alt={tour.title}

@@ -148,3 +148,41 @@ export const capturePaymentOrder = async (
   });
   return data;
 };
+
+export interface Destination {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  longDescription?: string;
+  image?: string;
+  bannerImage?: string;
+  isTop: boolean;
+  parentId?: string;
+  subDestinations?: Destination[];
+}
+
+export const getDestinations = async (): Promise<Destination[]> => {
+  const { data } = await api.get("/api/destinations");
+  return data;
+};
+
+export const getDestinationBySlug = async (slug: string): Promise<Destination> => {
+  const { data } = await api.get(`/api/destinations/slug/${slug}`);
+  return data;
+};
+
+export const createDestination = async (dest: any) => {
+  const { data } = await api.post("/api/destinations", dest);
+  return data;
+};
+
+export const updateDestination = async (id: string, dest: any) => {
+  const { data } = await api.put(`/api/destinations/${id}`, dest);
+  return data;
+};
+
+export const deleteDestination = async (id: string) => {
+  const { data } = await api.delete(`/api/destinations/${id}`);
+  return data;
+};

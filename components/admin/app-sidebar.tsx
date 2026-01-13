@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   ChevronRight,
   User,
+  Map,
 } from "lucide-react";
 
 import {
@@ -44,6 +45,11 @@ const items = [
     title: "Users",
     icon: Users,
     url: "/admin/users",
+  },
+  {
+    title: "Destinations",
+    icon: Map,
+    url: "/admin/destinations",
   },
   {
     title: "Tours",
