@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/checkbox"; // Using checkbox as switch proxy if switch not found
+import ImageUpload from "@/components/admin/ImageUpload";
 import {
   Select,
   SelectContent,
@@ -192,7 +192,7 @@ export default function DestinationForm() {
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
               <Label htmlFor="isTop" className="font-medium">
-                Show in "Top Destinations" section
+                Show in &quot;Top Destinations&quot; section
               </Label>
             </div>
           </CardContent>
@@ -239,29 +239,33 @@ export default function DestinationForm() {
               <ImageIcon className="h-5 w-5" /> Visuals
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="image">Main Image URL</Label>
-              <Input
-                id="image"
-                value={formData.image}
-                onChange={(e) =>
-                  setFormData({ ...formData, image: e.target.value })
+              <Label htmlFor="image">Main Image (Card Display)</Label>
+              <ImageUpload
+                value={formData.image ? [formData.image] : []}
+                onChange={(urls) =>
+                  setFormData({
+                    ...formData,
+                    image: urls[urls.length - 1] || "",
+                  })
                 }
-                placeholder="https://..."
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="bannerImage">
-                Banner Image URL (Detail Page Hero)
+                Banner Image (Detail Page Hero)
               </Label>
-              <Input
-                id="bannerImage"
-                value={formData.bannerImage}
-                onChange={(e) =>
-                  setFormData({ ...formData, bannerImage: e.target.value })
+              <ImageUpload
+                value={formData.bannerImage ? [formData.bannerImage] : []}
+                onChange={(urls) =>
+                  setFormData({
+                    ...formData,
+                    bannerImage: urls[urls.length - 1] || "",
+                  })
                 }
-                placeholder="https://..."
+                disabled={isLoading}
               />
             </div>
           </CardContent>
