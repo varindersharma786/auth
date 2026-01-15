@@ -11,25 +11,25 @@ export default function Home() {
     <div className="min-h-screen bg-white font-sans">
       <main className="w-full">
         {/* Hero Section */}
-        <HeroCarousel />
+        {/* <HeroCarousel /> */}
 
         {/* Search & Stats */}
-        <SearchSection />
+        {/* <SearchSection /> */}
 
         {/* Trip Exploration */}
-        <TripTabs />
+        {/* <TripTabs /> */}
 
         {/* What Sets Us Apart */}
-        <WhatSetsUsApart />
+        {/* <WhatSetsUsApart /> */}
 
         {/* Promo Banner */}
-        <PromoBanner />
+        {/* <PromoBanner /> */}
 
         {/* Destination Grid */}
-        <DestinationGrid />
+        {/* <DestinationGrid /> */}
 
         {/* Subscription */}
-        <SubscriptionSection />
+        {/* <SubscriptionSection /> */}
       </main>
     </div>
   );

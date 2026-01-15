@@ -37,7 +37,7 @@ export default function Login() {
         },
         {
           onSuccess: (ctx) => {
-            const authToken = ctx.response.headers.get("set-auth-token");
+            const authToken = ctx.response.headers.get("set-auth-token") as string;
             localStorage.setItem("bearer_token", authToken);
           },
         }

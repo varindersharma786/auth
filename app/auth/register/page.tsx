@@ -18,7 +18,8 @@ import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Register() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [inputTerms, setInputTerms] = useState<boolean>(false);
   const router = useRouter();
 
   const handleFormSubmission = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,13 +39,13 @@ export default function Register() {
         email,
         password,
         name,
-        callbackURL: "/",
+        callbackURL: "/auth/email-verification",
       });
       if (error) {
         toast.error(error.message);
       } else {
         toast.success("Registered successfully");
-        router.push("/");
+        router.push("/auth/email-verification");
       }
     } catch (error) {
       toast.error((error as Error).message);
@@ -93,7 +94,13 @@ export default function Register() {
               </div>
               <div className="flex flex-col items-start gap-3">
                 <Label htmlFor="terms">
-                  <Checkbox id="terms" name="terms" /> Accept terms and conditions
+                  <Checkbox
+                    id="terms"
+                    name="terms"
+                    checked={inputTerms}
+                    onCheckedChange={(checked) => setInputTerms(!!checked)}
+                  />
+                  Accept terms and conditions
                 </Label>
                 <p className="text-muted-foreground text-sm">
                   By clicking this checkbox, you agree to the terms and
@@ -107,7 +114,7 @@ export default function Register() {
           <Button
             type="submit"
             className="w-full"
-            disabled={loading}
+            disabled={loading || !inputTerms}
             onClick={() => {
               const form = document.querySelector("form");
               form?.requestSubmit();
