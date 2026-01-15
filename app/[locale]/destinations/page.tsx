@@ -6,29 +6,25 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Destination, getDestinations, API_BASE } from "@/lib/api";
 
 export default function AllDestinationsPage() {
-  const [destinations, setDestinations] = React.useState<any[]>([]);
-  const [topDestinations, setTopDestinations] = React.useState<any[]>([]);
+  const [destinations, setDestinations] = React.useState<Destination[]>([]);
+  const [topDestinations, setTopDestinations] = React.useState<Destination[]>(
+    []
+  );
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const [allRes, topRes] = await Promise.all([
-          fetch(
-            `${
-              process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
-            }/api/destinations`
-          ),
-          fetch(
-            `${
-              process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
-            }/api/destinations/top`
-          ),
+        const [allData, topRes] = await Promise.all([
+          getDestinations(),
+          fetch(`${API_BASE}/api/destinations/top`),
         ]);
-        const allData = await allRes.json();
+
         const topData = await topRes.json();
+
         setDestinations(allData || []);
         setTopDestinations(topData || []);
       } catch (error) {
@@ -72,15 +68,16 @@ export default function AllDestinationsPage() {
         {/* Intro */}
         <div className="max-w-3xl mx-auto text-center mb-20">
           <p className="text-2xl font-medium text-zinc-700 leading-relaxed">
-            With more than 1,000 adventures in over 100 countries, we&apos;re now
-            covering more of the globe than ever before — north to south, east
-            to west.
+            With more than 1,000 adventures in over 100 countries, we&apos;re
+            now covering more of the globe than ever before — north to south,
+            east to west.
           </p>
           <p className="mt-6 text-zinc-500 text-sm leading-relaxed">
-            We&apos;ve curated unique travel experiences that take you beyond the
-            typical tourist path, allowing you to connect with local cultures
-            and landscapes in meaningful ways. Whether you&apos;re seeking a short
-            break or an epic journey, we have something for every traveler.
+            We&apos;ve curated unique travel experiences that take you beyond
+            the typical tourist path, allowing you to connect with local
+            cultures and landscapes in meaningful ways. Whether you&apos;re
+            seeking a short break or an epic journey, we have something for
+            every traveler.
           </p>
         </div>
 
