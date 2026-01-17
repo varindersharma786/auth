@@ -1,8 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import HeroSection from "@/components/home/HeroSection";
 import IntroSection from "@/components/home/IntroSection";
 import DealsTable from "@/components/home/DealsTable";
@@ -14,16 +15,57 @@ import BrowseByDestination from "@/components/home/BrowseByDestination";
 import PurposeSection from "@/components/home/PurposeSection";
 import SubscriptionSection from "@/components/home/SubscriptionSection";
 import { useCurrency } from "@/context/CurrencyContext";
+import { Banner, Article, getBanners, getArticles } from "@/lib/api";
 
 export default function RegionPage() {
   const params = useParams();
   const region = params?.region as string;
   const { localizeLink } = useCurrency();
 
+  const [heroBanner, setHeroBanner] = useState<Banner | undefined>();
+  const [introArticle, setIntroArticle] = useState<Article | undefined>();
+  const [loading, setLoading] = useState(true);
+
   // Capitalize region name for display
   const regionName = region
     ? region.charAt(0).toUpperCase() + region.slice(1)
     : "Region";
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch hero banner for this region (or fallback to general HERO type)
+        const banners = await getBanners("HERO");
+        const regionBanner = banners.find(
+          (b) =>
+            b.title.toLowerCase().includes(region?.toLowerCase() || "") &&
+            b.isActive
+        );
+        setHeroBanner(regionBanner || banners.find((b) => b.isActive));
+
+        // Fetch intro article for this region
+        const articles = await getArticles("HIGHLIGHT");
+        const regionArticle = articles.find((a) =>
+          a.title.toLowerCase().includes(region?.toLowerCase() || "")
+        );
+        setIntroArticle(regionArticle || articles[0]);
+      } catch (error) {
+        console.error("Failed to fetch region content:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [region]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -51,8 +93,8 @@ export default function RegionPage() {
       </div>
 
       <main className="w-full">
-        <HeroSection region={regionName} />
-        <IntroSection region={regionName} />
+        <HeroSection banner={heroBanner} region={regionName} />
+        <IntroSection article={introArticle} region={regionName} />
         <DealsTable region={regionName} />
         <TripGrid region={regionName} />
         <HighlightsSection region={regionName} />
