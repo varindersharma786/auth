@@ -22,6 +22,7 @@ interface CurrencyContextType {
   setCurrency: (currency: Currency) => void;
   setCountry: (countryCode: string) => void;
   localizeLink: (path: string) => string;
+  formatPrice: (amount: number, fromCurrency?: string) => string;
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(
@@ -156,6 +157,24 @@ export const CurrencyProvider = ({
     setCurrency,
     setCountry,
     localizeLink,
+    formatPrice: (amount: number, fromCurrency: string = "USD") => {
+      // If amount is in different currency than USD, we might need a base conversion.
+      // For now, assuming input amount is in USD or same as base from which we have rates.
+      // Based on FRANKFURTER API, USD is base.
+
+      let amountInUSD = amount;
+      if (fromCurrency !== "USD") {
+        // Convert back to USD if fromCurrency is provided and not USD
+        const currentRate = exchangeRates[fromCurrency as Currency] || 1;
+        amountInUSD = amount / currentRate;
+      }
+
+      const rate = exchangeRates[currency] || 1;
+      const convertedValue = amountInUSD * rate;
+      const symbol = CURRENCY_SYMBOLS[currency];
+
+      return `${symbol}${Math.round(convertedValue).toLocaleString()}`;
+    },
   };
 
   return (

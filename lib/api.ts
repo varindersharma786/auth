@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
 });
@@ -62,6 +62,7 @@ export interface Tour {
   style: string;
   theme: string;
   priceFrom: number;
+  discountPrice?: number;
   currency: string;
   mealsIncluded: boolean;
   transport: string;
@@ -70,6 +71,10 @@ export interface Tour {
   mapImage?: string;
   inclusions: string[];
   exclusions: string[];
+  isFeatured: boolean;
+  isNew: boolean;
+  isSale: boolean;
+  promoTag?: string;
   createdAt: string;
   updatedAt: string;
   destinationId?: string;
@@ -186,4 +191,94 @@ export const updateDestination = async (id: string, dest: Partial<Destination>) 
 export const deleteDestination = async (id: string) => {
   const { data } = await api.delete(`/api/destinations/${id}`);
   return data;
+};
+// Search tours with filters
+export const searchTours = async (params: Record<string, unknown>): Promise<{ tours: Tour[], pagination: { total: number, page: number, limit: number, pages: number } }> => {
+  const { data } = await api.get("/api/tours/search", { params });
+  return data;
+};
+
+// --- CMS & Articles ---
+export interface Article {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle?: string;
+  content: string;
+  image?: string;
+  category: string;
+  author?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const getArticles = async (category?: string): Promise<Article[]> => {
+  const { data } = await api.get("/api/cms/articles", { params: { category } });
+  return data.articles;
+};
+
+export const getArticleBySlug = async (slug: string): Promise<Article> => {
+  const { data } = await api.get(`/api/cms/articles/${slug}`);
+  return data;
+};
+
+export interface Banner {
+  id: string;
+  type: string;
+  title: string;
+  subtitle?: string;
+  imageUrl: string;
+  ctaText?: string;
+  ctaUrl?: string;
+  isActive: boolean;
+  order: number;
+}
+
+export const getBanners = async (type?: string): Promise<Banner[]> => {
+  const { data } = await api.get("/api/cms/banners", { params: { type } });
+  return data;
+};
+
+export interface SiteSettings {
+  siteName: string;
+  logoUrl?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  address?: string;
+  socialLinks?: Record<string, string>;
+  footerText?: string;
+}
+
+export const getSiteSettings = async (): Promise<SiteSettings> => {
+  const { data } = await api.get("/api/cms/settings");
+  return data;
+};
+
+// --- Reviews ---
+export interface Review {
+  id: string;
+  tourId: string;
+  rating: number;
+  comment: string;
+  user: { name: string, image?: string };
+  createdAt: string;
+}
+
+export const getTourReviews = async (tourId: string): Promise<{ reviews: Review[], averageRating: number, totalReviews: number }> => {
+  const { data } = await api.get(`/api/reviews/tour/${tourId}`);
+  return data;
+};
+
+// --- Wishlist ---
+export const getWishlist = async (): Promise<Tour[]> => {
+  const { data } = await api.get("/api/wishlist");
+  return data;
+};
+
+export const toggleWishlist = async (tourId: string, action: 'add' | 'remove') => {
+  if (action === 'add') {
+    return api.post(`/api/wishlist/${tourId}`);
+  } else {
+    return api.delete(`/api/wishlist/${tourId}`);
+  }
 };
