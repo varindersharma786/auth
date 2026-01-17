@@ -1,200 +1,192 @@
 "use client";
 
-import * as React from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import Image from "next/image";
+import { Search, MapPin } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Destination, getDestinations, API_BASE } from "@/lib/api";
+import { useCurrency } from "@/context/CurrencyContext";
+import SubscriptionSection from "@/components/home/SubscriptionSection";
 
-export default function AllDestinationsPage() {
-  const [destinations, setDestinations] = React.useState<Destination[]>([]);
-  const [topDestinations, setTopDestinations] = React.useState<Destination[]>(
-    []
-  );
-  const [loading, setLoading] = React.useState(true);
+const REGIONS = [
+  {
+    name: "Africa",
+    slug: "africa",
+    description:
+      "Wildlife safaris, ancient cultures, and breathtaking landscapes",
+    image:
+      "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=1200",
+    tourCount: 45,
+  },
+  {
+    name: "Asia",
+    slug: "asia",
+    description: "Ancient temples, vibrant cultures, and diverse adventures",
+    image:
+      "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&q=80&w=1200",
+    tourCount: 38,
+  },
+  {
+    name: "Europe",
+    slug: "europe",
+    description:
+      "Historic cities, stunning architecture, and cultural treasures",
+    image:
+      "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&q=80&w=1200",
+    tourCount: 32,
+  },
+  {
+    name: "Americas",
+    slug: "americas",
+    description: "From rainforests to glaciers, discover the New World",
+    image:
+      "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&q=80&w=1200",
+    tourCount: 28,
+  },
+  {
+    name: "Oceania",
+    slug: "oceania",
+    description: "Island paradises, unique wildlife, and pristine nature",
+    image:
+      "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=1200",
+    tourCount: 18,
+  },
+  {
+    name: "Middle East",
+    slug: "middle-east",
+    description: "Ancient history, desert adventures, and modern marvels",
+    image:
+      "https://images.unsplash.com/photo-1549144511-f099e773c147?auto=format&fit=crop&q=80&w=1200",
+    tourCount: 15,
+  },
+];
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [allData, topRes] = await Promise.all([
-          getDestinations(),
-          fetch(`${API_BASE}/api/destinations/top`),
-        ]);
-
-        const topData = await topRes.json();
-
-        setDestinations(allData || []);
-        setTopDestinations(topData || []);
-      } catch (error) {
-        console.error("Error fetching destinations:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+export default function DestinationsPage() {
+  const { localizeLink } = useCurrency();
 
   return (
-    <div className="min-h-screen bg-white pb-20">
-      {/* Hero Section */}
-      <div className="relative w-full">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center gap-2 text-xs text-zinc-500 mb-6">
-            <Link href="/" className="hover:text-zinc-900">
-              Home
-            </Link>
-            <span>›</span>
-            <span className="text-zinc-900 font-medium">All destinations</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-center text-zinc-900 mb-12">
-            All destinations
+    <div className="min-h-screen bg-white">
+      {/* Hero */}
+      <section className="relative h-[400px] md:h-[500px] overflow-hidden bg-[#2D2424]">
+        <Image
+          src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=2000"
+          alt="World destinations"
+          fill
+          className="object-cover opacity-40"
+          priority
+        />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+          <h1 className="text-5xl md:text-6xl font-serif font-bold text-white mb-6 drop-shadow-xl">
+            Explore the World
           </h1>
-        </div>
-
-        <div className="aspect-21/9 relative w-full overflow-hidden">
-          <Image
-            src="/destinations-hero.webp" // Need to generate or use placeholder
-            alt="All destinations"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 max-w-7xl mt-16">
-        {/* Intro */}
-        <div className="max-w-3xl mx-auto text-center mb-20">
-          <p className="text-2xl font-medium text-zinc-700 leading-relaxed">
-            With more than 1,000 adventures in over 100 countries, we&apos;re
-            now covering more of the globe than ever before — north to south,
-            east to west.
+          <p className="text-xl text-white/90 max-w-2xl mb-10 drop-shadow-lg">
+            Choose your next adventure from our curated destinations across the
+            globe
           </p>
-          <p className="mt-6 text-zinc-500 text-sm leading-relaxed">
-            We&apos;ve curated unique travel experiences that take you beyond
-            the typical tourist path, allowing you to connect with local
-            cultures and landscapes in meaningful ways. Whether you&apos;re
-            seeking a short break or an epic journey, we have something for
-            every traveler.
-          </p>
-        </div>
 
-        {/* Categories / Continents */}
-        <section className="mb-24">
-          <h2 className="text-2xl font-bold text-zinc-900 mb-8">
-            Where you can go
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {loading
-              ? Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="space-y-3">
-                    <Skeleton className="aspect-video w-full rounded-xl" />
-                    <Skeleton className="h-6 w-1/3" />
-                  </div>
-                ))
-              : destinations.map((dest) => (
-                  <Link
-                    key={dest.id}
-                    href={`/en/destinations/${dest.slug}`}
-                    className="group"
-                  >
-                    <div className="aspect-video relative rounded-xl overflow-hidden mb-4 shadow-sm border">
-                      <Image
-                        src={dest.image || "/placeholder-destination.jpg"}
-                        alt={dest.name}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <h3 className="text-lg font-bold text-zinc-900 group-hover:text-red-600 transition-colors">
-                      {dest.name}
-                    </h3>
-                  </Link>
-                ))}
+          {/* Search Bar */}
+          <div className="w-full max-w-2xl relative">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
+            <Input
+              placeholder="Search destinations, countries, or regions..."
+              className="h-16 pl-14 pr-6 rounded-full text-lg bg-white/95 backdrop-blur-sm border-none shadow-2xl"
+            />
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Call to Action */}
-        <div className="bg-zinc-50 rounded-2xl p-8 md:p-12 mb-24 flex flex-col md:flex-row items-center justify-between gap-8 border shadow-sm">
-          <div>
-            <h2 className="text-2xl font-bold text-zinc-900 mb-2">
-              Discover your next adventure
+      {/* Regions Grid */}
+      <section className="py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
+              Browse by Region
             </h2>
-            <p className="text-zinc-500">
-              Search 1000+ trips in 100+ countries, search tours near you.
+            <p className="text-zinc-600 text-lg">
+              Select a region to discover incredible tours and experiences
             </p>
           </div>
-          <Button className="bg-black text-white px-8 h-12 rounded-full font-bold hover:bg-zinc-800 transition-colors shrink-0">
-            Explore all trips
-          </Button>
-        </div>
 
-        {/* Top Destinations */}
-        <section>
-          <h2 className="text-2xl font-bold text-zinc-900 mb-10">
-            Our top destinations
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {loading
-              ? Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="space-y-4">
-                    <Skeleton className="aspect-square w-full rounded-xl" />
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton className="h-20 w-full" />
-                  </div>
-                ))
-              : topDestinations.map((dest, index) => (
-                  <div key={dest.id} className="flex flex-col">
-                    <Link
-                      href={`/en/destinations/${dest.slug}`}
-                      className="aspect-square relative rounded-xl overflow-hidden mb-6 shadow-sm border group"
-                    >
-                      <Image
-                        src={dest.image || "/placeholder-destination.jpg"}
-                        alt={dest.name}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </Link>
-                    <h3 className="text-xl font-bold text-zinc-900 mb-4">
-                      {index + 1}. {dest.name}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {REGIONS.map((region) => (
+              <Link
+                key={region.slug}
+                href={localizeLink(`/destinations/${region.slug}`)}
+              >
+                <div className="group relative aspect-[4/5] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer">
+                  <Image
+                    src={region.image}
+                    alt={region.name}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
+
+                  <div className="absolute bottom-0 left-0 right-0 p-8">
+                    <div className="flex items-center gap-2 text-white/80 mb-3">
+                      <MapPin className="h-4 w-4" />
+                      <span className="text-xs font-bold uppercase tracking-wider">
+                        {region.tourCount} Tours
+                      </span>
+                    </div>
+                    <h3 className="text-3xl font-serif font-bold text-white mb-3 group-hover:text-primary transition-colors">
+                      {region.name}
                     </h3>
-                    <p className="text-zinc-500 text-sm leading-relaxed mb-6 line-clamp-4">
-                      {dest.description ||
-                        "Explore the wonders and hidden gems of this incredible destination. From bustling cities to serene landscapes, there's always something new to discover."}
+                    <p className="text-white/90 text-sm leading-relaxed">
+                      {region.description}
                     </p>
-                    <Button
-                      variant="outline"
-                      asChild
-                      className="w-full mt-auto rounded-none border-zinc-900 font-bold hover:bg-zinc-900 hover:text-white transition-colors"
-                    >
-                      <Link href={`/en/destinations/${dest.slug}`}>
-                        Explore {dest.name}
-                      </Link>
+                    <Button className="mt-6 rounded-full bg-white text-zinc-900 hover:bg-primary hover:text-white transition-all">
+                      Explore {region.name}
                     </Button>
                   </div>
-                ))}
+                </div>
+              </Link>
+            ))}
           </div>
-          <div className="mt-12 flex justify-end gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full h-10 w-10 border-zinc-300"
-            >
-              <ChevronRight className="w-5 h-5 rotate-180" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full h-10 w-10 border-zinc-300"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
+        </div>
+      </section>
+
+      {/* Popular Destinations */}
+      <section className="py-20 px-6 bg-zinc-50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-12 text-center">
+            Popular Destinations
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {[
+              "Kenya",
+              "Tanzania",
+              "Thailand",
+              "Peru",
+              "Iceland",
+              "Morocco",
+              "Japan",
+              "New Zealand",
+              "Italy",
+              "Brazil",
+              "Norway",
+              "Vietnam",
+            ].map((dest) => (
+              <Link
+                key={dest}
+                href={localizeLink(
+                  `/destinations/africa/${dest.toLowerCase()}`
+                )}
+              >
+                <div className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 text-center cursor-pointer">
+                  <MapPin className="h-8 w-8 mx-auto mb-3 text-primary group-hover:scale-110 transition-transform" />
+                  <h4 className="font-bold text-lg group-hover:text-primary transition-colors">
+                    {dest}
+                  </h4>
+                </div>
+              </Link>
+            ))}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+
+      {/* Newsletter */}
+      <SubscriptionSection />
     </div>
   );
 }
