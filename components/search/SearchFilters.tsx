@@ -23,7 +23,7 @@ const DESTINATIONS = [
   "North America",
   "South America",
 ];
-const STYLES = ["Basix", "Original", "Comfort", "Premium"];
+const STYLES = ["Basic", "Original", "Comfort", "Premium"];
 const THEMES = [
   "Short breaks",
   "18 to 35s",

@@ -72,6 +72,7 @@ export interface Tour {
   exclusions: string[];
   createdAt: string;
   updatedAt: string;
+  destinationId?: string;
   itinerary: Itinerary[];
   highlight: Highlight[];
   accommodation: Accommodation[];
@@ -133,7 +134,7 @@ export const deleteTour = async (id: string) => {
 };
 
 export const createPaymentOrder = async (
-  bookingDetails: any
+  bookingDetails: Record<string, unknown>
 ): Promise<{ orderID: string; bookingID: string }> => {
   const { data } = await api.post("/api/payment/orders", bookingDetails);
   return data;
@@ -142,7 +143,7 @@ export const createPaymentOrder = async (
 export const capturePaymentOrder = async (
   orderID: string,
   bookingID: string
-): Promise<any> => {
+): Promise<unknown> => {
   const { data } = await api.post(`/api/payment/orders/${orderID}/capture`, {
     bookingID,
   });
@@ -172,12 +173,12 @@ export const getDestinationBySlug = async (slug: string): Promise<Destination> =
   return data;
 };
 
-export const createDestination = async (dest: any) => {
+export const createDestination = async (dest: Partial<Destination>) => {
   const { data } = await api.post("/api/destinations", dest);
   return data;
 };
 
-export const updateDestination = async (id: string, dest: any) => {
+export const updateDestination = async (id: string, dest: Partial<Destination>) => {
   const { data } = await api.put(`/api/destinations/${id}`, dest);
   return data;
 };

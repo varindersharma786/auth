@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
 
 export default function PromoBanner() {
   return (
@@ -20,11 +19,11 @@ export default function PromoBanner() {
             Go where the joy takes you
           </h2>
           <p className="text-xl text-gray-600 max-w-md italic">
-            "The world is a book and those who do not travel read only one
-            page."
+            &quot;The world is a book and those who do not travel read only one
+            page.&quot;
           </p>
           <Button className="w-fit bg-red-600 hover:bg-red-700 text-white font-bold py-6 px-10 rounded-full text-lg">
-            Let's go
+            Let&apos;s go
           </Button>
         </div>
         <div className="flex-1 relative hidden lg:block">
@@ -73,7 +72,7 @@ export default function PromoBanner() {
   );
 }
 
-function FeatureItem({ title, desc, icon }: any) {
+function FeatureItem({ title, desc, icon }: { title: string; desc: string; icon: string }) {
   return (
     <div className="flex gap-4">
       <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center shrink-0">

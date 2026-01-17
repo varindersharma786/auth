@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,7 +10,6 @@ import {
   Plus,
   Trash2,
   Calendar,
-  MapPin,
   Map,
   DollarSign,
   Users,
@@ -22,6 +21,7 @@ import {
 } from "lucide-react";
 
 import ImageUpload from "@/components/admin/ImageUpload";
+import LocationInput from "@/components/admin/LocationInput";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,7 +55,13 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 
-import { createTour, updateTour, getTour } from "@/lib/api";
+import {
+  createTour,
+  updateTour,
+  getTour,
+  getDestinations,
+  Destination,
+} from "@/lib/api";
 
 const tourSchema = z.object({
   code: z.string().min(1, "Code is required"),
@@ -66,11 +72,11 @@ const tourSchema = z.object({
   durationDays: z.number().min(1),
   minAge: z.number().nullable(),
   maxGroupSize: z.number().min(1),
-  style: z.string().default("ORIGINAL"),
+  style: z.string().min(1, "Style is required"),
   theme: z.string().min(1, "Theme is required"),
   priceFrom: z.number().min(0),
-  currency: z.string().default("USD"),
-  mealsIncluded: z.boolean().default(false),
+  currency: z.string().min(1, "Currency is required"),
+  mealsIncluded: z.boolean(),
   transport: z.string().min(1, "Transport info is required"),
   itinerary: z.array(
     z.object({
@@ -100,11 +106,12 @@ const tourSchema = z.object({
       notes: z.string().optional(),
     })
   ),
-  images: z.array(z.string()).default([]),
+  images: z.array(z.string()),
   mapImage: z.string().optional(),
   overview: z.string().optional(),
-  inclusions: z.array(z.string()).default([]),
-  exclusions: z.array(z.string()).default([]),
+  inclusions: z.array(z.string()),
+  exclusions: z.array(z.string()),
+  destinationId: z.string().min(1, "Category is required"),
 });
 
 type TourFormValues = z.infer<typeof tourSchema>;
@@ -119,8 +126,8 @@ export default function TourForm({ params }: TourFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(params.id !== "new");
 
-  const form = useForm<TourFormValues>({
-    resolver: zodResolver(tourSchema),
+  const form = useForm<any>({
+    resolver: zodResolver(tourSchema) as any,
     defaultValues: {
       code: "",
       title: "",
@@ -145,8 +152,11 @@ export default function TourForm({ params }: TourFormProps) {
       overview: "",
       inclusions: [],
       exclusions: [],
+      destinationId: "",
     },
   });
+
+  const [destinations, setDestinations] = useState<Destination[]>([]);
 
   const {
     fields: itFields,
@@ -201,7 +211,13 @@ export default function TourForm({ params }: TourFormProps) {
     }
   }, [params.id, form]);
 
-  const onSubmit = async (values: TourFormValues) => {
+  useEffect(() => {
+    getDestinations()
+      .then(setDestinations)
+      .catch(() => toast.error("Failed to fetch destinations"));
+  }, []);
+
+  const onSubmit: SubmitHandler<TourFormValues> = async (values) => {
     setIsLoading(true);
     try {
       if (params.id === "new") {
@@ -360,19 +376,60 @@ export default function TourForm({ params }: TourFormProps) {
                       />
                       <FormField
                         control={form.control}
+                        name="destinationId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category / Region</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select Destination" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {destinations.map((dest) => (
+                                  <SelectItem key={dest.id} value={dest.id}>
+                                    {dest.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Automatic selection based on location, but you can
+                              override it.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
                         name="startLocation"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Start Location</FormLabel>
                             <FormControl>
-                              <div className="relative">
-                                <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                  className="pl-9"
-                                  placeholder="Nairobi, Kenya"
-                                  {...field}
-                                />
-                              </div>
+                              <LocationInput
+                                value={field.value}
+                                onChange={(val, region) => {
+                                  field.onChange(val);
+                                  if (region) {
+                                    const dest = destinations.find(
+                                      (d) =>
+                                        d.name.toLowerCase() ===
+                                        region.toLowerCase()
+                                    );
+                                    if (dest) {
+                                      form.setValue("destinationId", dest.id);
+                                    }
+                                  }
+                                }}
+                                placeholder="Nairobi, Kenya"
+                                disabled={isLoading}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -385,14 +442,27 @@ export default function TourForm({ params }: TourFormProps) {
                           <FormItem>
                             <FormLabel>End Location</FormLabel>
                             <FormControl>
-                              <div className="relative">
-                                <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                  className="pl-9"
-                                  placeholder="Mombasa, Kenya"
-                                  {...field}
-                                />
-                              </div>
+                              <LocationInput
+                                value={field.value}
+                                onChange={(val, region) => {
+                                  field.onChange(val);
+                                  if (
+                                    region &&
+                                    !form.getValues("destinationId")
+                                  ) {
+                                    const dest = destinations.find(
+                                      (d) =>
+                                        d.name.toLowerCase() ===
+                                        region.toLowerCase()
+                                    );
+                                    if (dest) {
+                                      form.setValue("destinationId", dest.id);
+                                    }
+                                  }
+                                }}
+                                placeholder="Mombasa, Kenya"
+                                disabled={isLoading}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
