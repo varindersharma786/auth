@@ -19,6 +19,7 @@ interface TripExtrasStepProps {
 interface TourWithRelations extends Tour {
   roomOptions?: Array<{
     id: string;
+    tourId: string;
     roomType: string;
     description?: string;
     priceAdd: number;
@@ -26,6 +27,7 @@ interface TourWithRelations extends Tour {
   }>;
   departures?: Array<{
     id: string;
+    tourId: string;
     departureDate: string;
     endDate: string;
     price: number;

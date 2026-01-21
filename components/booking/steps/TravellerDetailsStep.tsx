@@ -67,6 +67,11 @@ export const TravellerDetailsStep = ({ onNext, onBack }: TravellerDetailsStepPro
               <div>
                 <h3 className="text-xl font-bold">
                   {index === 0 ? "Lead Traveler" : `Traveler ${index + 1}`}
+                  {index === 0 && (
+                    <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-1 rounded-full">
+                      Lead Guest
+                    </span>
+                  )}
                 </h3>
                 <p className="text-sm text-zinc-600">
                   {index === 0 ? "This person will receive all booking communications" : "Additional passenger information"}

@@ -61,7 +61,7 @@ const bookingSchema = z.object({
     nationality: z.string().optional(),
     passportNo: z.string().optional(),
     address: z.string().min(5, "Address is required"),
-    isLeadGuest: z.boolean().default(false),
+    isLeadGuest: z.boolean().optional(),
   })),
   emergencyContact: z.object({
     name: z.string().min(2, "Emergency contact name required"),
@@ -140,7 +140,7 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
         nationality: "",
         passportNo: "",
         address: "",
-        isLeadGuest: true,
+        isLeadGuest: true, // First traveler is always the lead guest
       }],
       emergencyContact: {
         name: "",
@@ -158,7 +158,54 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
     },
   });
 
-  const { handleSubmit, trigger } = methods;
+  const { handleSubmit, trigger, watch, setValue } = methods;
+
+  const numberOfTravelers = watch("numberOfTravelers");
+  const travelers = watch("travelers");
+
+  // Effect to manage travelers array based on number of travelers
+  useEffect(() => {
+    if (numberOfTravelers && travelers) {
+      const currentTravelersCount = travelers.length;
+      
+      if (currentTravelersCount < numberOfTravelers) {
+        // Add new travelers
+        const newTravelers = [...travelers];
+        for (let i = currentTravelersCount; i < numberOfTravelers; i++) {
+          newTravelers.push({
+            title: "",
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            dateOfBirth: "",
+            email: "",
+            phone: "",
+            nationality: "",
+            passportNo: "",
+            address: "",
+            isLeadGuest: false, // Additional travelers are not lead guests
+          });
+        }
+        
+        // Ensure all travelers have isLeadGuest property set
+        for (let i = 0; i < newTravelers.length; i++) {
+          if (newTravelers[i].isLeadGuest === undefined) {
+            newTravelers[i].isLeadGuest = i === 0; // First traveler is lead guest
+          }
+        }
+        setValue("travelers", newTravelers);
+      } else if (currentTravelersCount > numberOfTravelers) {
+        // Remove extra travelers
+        const updatedTravelers = travelers.slice(0, numberOfTravelers);
+        setValue("travelers", updatedTravelers);
+      }
+      
+      // Ensure first traveler is always the lead guest
+      if (travelers.length > 0) {
+        setValue("travelers.0.isLeadGuest", true);
+      }
+    }
+  }, [numberOfTravelers, travelers, setValue]);
 
   const steps = [
     { id: 1, label: "Select date" },
@@ -238,7 +285,7 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
       <div className="flex justify-center mb-8">
         <div className="flex items-center gap-4 relative">
           {/* Connecting line */}
-          <div className="absolute top-1/2 left-0 w-full h-[1px] bg-gray-200 dark:bg-gray-700 -z-10" />
+          <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 dark:bg-gray-700 -z-10 transform -translate-y-1/2" />
 
           {steps.map((step) => {
             const isCompleted = currentStep > step.id;
@@ -247,7 +294,7 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
             return (
               <div
                 key={step.id}
-                className="flex flex-col items-center gap-2 bg-background px-4"
+                className="flex flex-col items-center gap-2 bg-background px-4 relative z-10"
               >
                 <div
                   className={cn(
@@ -256,7 +303,7 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
                       ? "bg-primary border-primary text-primary-foreground"
                       : isCurrent
                       ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background border-muted-foreground text-muted-foreground"
+                      : "bg-background border-gray-300 dark:border-gray-600 text-muted-foreground"
                   )}
                 >
                   {isCompleted ? (
