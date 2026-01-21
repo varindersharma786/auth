@@ -98,7 +98,7 @@ export default function DestinationsPage() {
                   {filteredRegions.map((region) => (
                     <Link
                       key={region.id}
-                      href={localizeLink(`/destinations/slug/${region.slug}`)}
+                      href={localizeLink(`/destinations/${region.slug}`)}
                     >
                       <div className="group relative aspect-[4/5] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer">
                         <Image
@@ -150,7 +150,7 @@ export default function DestinationsPage() {
                   {filteredCountries.map((dest) => (
                     <Link
                       key={dest.id}
-                      href={localizeLink(`/destinations/slug/${dest.slug}`)}
+                      href={localizeLink(`/destinations/${dest.slug}`)}
                     >
                       <div className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 text-center cursor-pointer">
                         <MapPin className="h-8 w-8 mx-auto mb-3 text-primary group-hover:scale-110 transition-transform" />

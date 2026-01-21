@@ -80,7 +80,7 @@ export default function DealsTable() {
               >
                 <TableCell className="font-medium py-6">
                   <Link
-                    href={localizeLink(`/tours/slug/${tour.slug}`)}
+                    href={localizeLink(`/tours/${tour.slug}`)}
                     className="hover:text-primary"
                   >
                     {tour.title}
@@ -127,7 +127,7 @@ export default function DealsTable() {
                     >
                       <Heart className="h-5 w-5" />
                     </Button>
-                    <Link href={localizeLink(`/tours/slug/${tour.slug}`)}>
+                    <Link href={localizeLink(`/tours/${tour.slug}`)}>
                       <Button size="sm" className="rounded-full">
                         View Trip
                       </Button>

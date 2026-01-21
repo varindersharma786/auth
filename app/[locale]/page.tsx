@@ -218,7 +218,7 @@ export default function Home() {
                 {destinations.slice(0, 8).map((dest) => (
                   <Link
                     key={dest.id}
-                    href={localizeLink(`/destinations/slug/${dest.slug}`)}
+                    href={localizeLink(`/destinations/${dest.slug}`)}
                     className="group block"
                   >
                     <div className="relative aspect-square rounded-full overflow-hidden mb-4 shadow-md border-4 border-white mx-auto max-w-[220px] group-hover:border-primary transition-colors duration-300">
