@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 export const dynamic = "force-dynamic";
 
 interface TourPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export default async function TourPage({ params }: TourPageProps) {

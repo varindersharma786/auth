@@ -4,13 +4,15 @@ import { getTourBySlug } from "@/lib/api";
 import { BookingClient } from "@/components/booking/BookingClient";
 
 interface BookingPageProps {
-  params: {
+  params: Promise<{
+    locale: string;
     slug: string;
-  };
+  }>;
 }
 
 export default async function BookingPage({ params }: BookingPageProps) {
-  const tour = await getTourBySlug(params.slug).catch(() => null);
+  const { slug } = await params;
+  const tour = await getTourBySlug(slug).catch(() => null);
 
   if (!tour) {
     notFound();
