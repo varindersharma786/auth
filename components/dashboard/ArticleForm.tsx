@@ -195,7 +195,7 @@ export default function ArticleForm({ id }: ArticleFormProps) {
             Drafts are only visible to admins.
           </p>
         </div>
-        {/* @ts-ignore */}
+
         <Switch
           checked={formData.isDraft}
           onCheckedChange={(val) => setFormData({ ...formData, isDraft: val })}

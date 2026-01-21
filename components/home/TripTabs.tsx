@@ -25,6 +25,7 @@ const trips = [
     price: 1200,
     category: "Only Intrepid adventures",
     badge: "Bestseller",
+    slug: "vietnam-ha-long-bay-hanoi",
   },
   {
     id: "2",
@@ -36,6 +37,7 @@ const trips = [
     price: 2400,
     category: "Only Intrepid adventures",
     badge: "Exclusive",
+    slug: "kenya-great-migration-safari",
   },
   // Add more mock trips as needed
 ];
@@ -100,6 +102,7 @@ interface TripCardProps {
     price: number;
     category: string;
     badge: string;
+    slug: string;
   };
   exchangeRate: number;
   symbol: string;
@@ -107,6 +110,7 @@ interface TripCardProps {
 
 function TripCard({ trip, exchangeRate, symbol }: TripCardProps) {
   const finalPrice = Math.round(trip.price * exchangeRate);
+  const { localizeLink } = useCurrency();
 
   return (
     <Card className="group overflow-hidden border-none shadow-none hover:shadow-xl transition-all duration-300 rounded-xl bg-zinc-50/50">
@@ -155,7 +159,11 @@ function TripCard({ trip, exchangeRate, symbol }: TripCardProps) {
             </span>
           </div>
           <Link
-            href={`/tours/${trip.id}`}
+            href={
+              localizeLink
+                ? localizeLink(`/tours/${trip.slug}`)
+                : `/tours/${trip.slug}`
+            }
             className="text-sm font-bold text-red-600 hover:opacity-80"
           >
             View details

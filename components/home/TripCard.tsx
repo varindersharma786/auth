@@ -145,7 +145,7 @@ export default function TripCard({ trip }: TripCardProps) {
               </div>
             </div>
 
-            <Link href={localizeLink(`/tours/slug/${trip.slug}`)}>
+            <Link href={localizeLink(`/tours/${trip.slug}`)}>
               <Button
                 variant="ghost"
                 className="rounded-full group/btn pr-0 hover:bg-transparent text-primary font-bold"

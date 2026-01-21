@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Heart, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-// import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { useCurrency } from "@/context/CurrencyContext";
 
 import { Tour } from "@/lib/api";
 
@@ -14,6 +15,7 @@ interface TourCardProps {
 }
 
 export function TourCard({ tour }: TourCardProps) {
+  const { localizeLink } = useCurrency();
   const averageRating =
     tour.reviews && tour.reviews.length > 0
       ? (
@@ -56,7 +58,13 @@ export function TourCard({ tour }: TourCardProps) {
             <span>({tour.reviews?.length || 0} reviews)</span>
           </div>
 
-          <Link href={`/en/tours/${tour.slug}`}>
+          <Link
+            href={
+              localizeLink
+                ? localizeLink(`/tours/${tour.slug}`)
+                : `/tours/${tour.slug}`
+            }
+          >
             <h3 className="text-lg font-bold text-zinc-900 leading-snug hover:text-red-600 transition-colors line-clamp-2">
               {tour.title}
             </h3>
