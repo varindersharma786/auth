@@ -77,15 +77,12 @@ const bookingSchema = z.object({
   })).optional(),
   insuranceRequired: z.boolean().default(false),
   insuranceDetails: z.string().optional(),
+  donationAmount: z.number().optional(),
 
   // Step 5: Payment
-  paymentType: z.enum(["FULL_PAYMENT", "DEPOSIT"]),
-  agreeTerms: z.literal(true, {
-    errorMap: () => ({ message: "You must agree to the terms and conditions" }),
-  }),
-  readGuidelines: z.literal(true, {
-    errorMap: () => ({ message: "You must read the essential trip info" }),
-  }),
+  paymentType: z.enum(["FULL_PAYMENT", "DEPOSIT"]).default("FULL_PAYMENT"),
+  agreeTerms: z.literal(true).optional(),
+  readGuidelines: z.literal(true).optional(),
   updatesConsent: z.boolean().optional(),
 });
 
@@ -153,9 +150,10 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
       specialRequests: "",
       addOns: [],
       insuranceRequired: false,
+      donationAmount: 0,
       paymentType: "FULL_PAYMENT",
-      agreeTerms: undefined as any,
-      readGuidelines: undefined as any,
+      agreeTerms: undefined,
+      readGuidelines: undefined,
       updatesConsent: false,
     },
   });

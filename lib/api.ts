@@ -75,6 +75,10 @@ export interface Tour {
   isNew: boolean;
   isSale: boolean;
   promoTag?: string;
+  region?: string;
+  physicalRating?: number;
+  depositAmount?: number;
+  depositPercentage?: number;
   createdAt: string;
   updatedAt: string;
   destinationId?: string;
@@ -82,6 +86,28 @@ export interface Tour {
   highlight: Highlight[];
   accommodation: Accommodation[];
   tripExtras: TripExtra[];
+  departures?: TourDeparture[];
+  roomOptions?: RoomOption[];
+}
+
+export interface TourDeparture {
+  id: string;
+  tourId: string;
+  departureDate: string;
+  endDate: string;
+  price: number;
+  discountedPrice?: number;
+  availableSpaces: number;
+  status: string;
+}
+
+export interface RoomOption {
+  id: string;
+  tourId: string;
+  roomType: string;
+  description?: string;
+  priceAdd: number;
+  isDefault: boolean;
 }
 
 // Input types where ID is optional for nested items (for creation/updates)
@@ -101,11 +127,21 @@ export interface TripExtraInput extends Omit<TripExtra, "id"> {
   id?: string;
 }
 
-export interface TourInput extends Omit<Tour, "id" | "createdAt" | "updatedAt" | "itinerary" | "highlight" | "accommodation" | "tripExtras"> {
+export interface TourInput extends Omit<Tour, "id" | "createdAt" | "updatedAt" | "itinerary" | "highlight" | "accommodation" | "tripExtras" | "departures" | "roomOptions"> {
   itinerary: ItineraryInput[];
   highlight: HighlightInput[];
   accommodation: AccommodationInput[];
   tripExtras: TripExtraInput[];
+  departures?: TourDepartureInput[];
+  roomOptions?: RoomOptionInput[];
+}
+
+export interface TourDepartureInput extends Omit<TourDeparture, "id"> {
+  id?: string;
+}
+
+export interface RoomOptionInput extends Omit<RoomOption, "id"> {
+  id?: string;
 }
 
 export const getTours = async (): Promise<Tour[]> => {

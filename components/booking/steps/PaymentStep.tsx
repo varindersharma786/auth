@@ -29,18 +29,49 @@ export const PaymentStep = ({ onBack, tour }: PaymentStepProps) => {
   const agreeTerms = watch("agreeTerms");
   const readGuidelines = watch("readGuidelines");
   const updatesConsent = watch("updatesConsent");
+  const departureId = watch("departureId");
+  const roomOptionId = watch("roomOptionId");
+  const addOns = watch("addOns");
+  const insuranceRequired = watch("insuranceRequired");
+  const numberOfTravelers = watch("numberOfTravelers");
+  const donationAmount = 0; // donationAmount is not part of the form schema, so we'll use a fixed value for now
 
   const { currency, currencySymbol, exchangeRate } = useCurrency();
 
-  // Price calculation
-  const basePrice = tour.priceFrom - 725.5; // Demo discount
-  const finalPrice = basePrice * exchangeRate;
+  // Calculate total price dynamically based on selections
+  const calculateTotalPrice = () => {
+    // Get base price from selected departure
+    const selectedDeparture = tour.departures?.find(dep => dep.id === departureId);
+    const basePrice = selectedDeparture?.discountedPrice || selectedDeparture?.price || tour.priceFrom || 0;
+    
+    // Calculate room option price
+    const roomOption = tour.roomOptions?.find(ro => ro.id === roomOptionId);
+    const roomPrice = (roomOption?.priceAdd || 0) * (numberOfTravelers || 1);
+    
+    // Calculate add-ons price
+    let addOnsPrice = 0;
+    if (addOns) {
+      addOns.forEach(addOn => {
+        const extra = tour.tripExtras?.find(te => te.id === addOn.id);
+        if (extra?.price) {
+          addOnsPrice += extra.price * (addOn.quantity || 1);
+        }
+      });
+    }
+    
+    // Calculate total
+    const total = (basePrice + roomPrice + addOnsPrice) * (numberOfTravelers || 1) + donationAmount;
+    return total;
+  };
+
+  const totalPrice = calculateTotalPrice();
+  const convertedPrice = totalPrice * exchangeRate;
 
   // Format formatted price
   const formattedPrice = new Intl.NumberFormat(undefined, {
     style: "currency",
     currency,
-  }).format(finalPrice);
+  }).format(convertedPrice);
 
   const [paymentMethod, setPaymentMethod] = useState<"paypal" | "card">(
     "paypal"
@@ -153,14 +184,14 @@ export const PaymentStep = ({ onBack, tour }: PaymentStepProps) => {
                   key={currency} // Re-render if currency changes
                   style={{ layout: "vertical" }}
                   disabled={!agreeTerms || !readGuidelines}
-                  forceReRender={[currency, finalPrice]}
+                  forceReRender={[currency, convertedPrice]}
                   createOrder={async (data, actions) => {
                     // Prepare booking details
                     const bookingData = getValues();
                     const { orderID, bookingID } = await createPaymentOrder({
                       tourId: tour.id,
                       ...bookingData,
-                      totalPrice: finalPrice,
+                      totalPrice: convertedPrice,
                       currency: currency,
                       startDate: new Date().toISOString(), // Demo: using current date, should be from props/selection
                       endDate: new Date().toISOString(),

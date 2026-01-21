@@ -5,13 +5,14 @@ import TourHighlights from "@/components/tour/TourHighlights";
 import TourItinerary from "@/components/tour/TourItinerary";
 import TourSidebar from "@/components/tour/TourSidebar";
 import TourInclusions from "@/components/tour/TourInclusions";
-import TourAccommodation from "@/components/tour/TourAccommodation";
-import TourReviews from "@/components/tour/TourReviews";
-import TourExtras from "@/components/tour/TourExtras";
+
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { ChevronRight, MapPin } from "lucide-react";
+import TourAccommodation from "@/components/tour/TourAccommodation";
+import TourExtras from "@/components/tour/TourExtras";
+import TourReviews from "@/components/tour/TourReviews";
 
 // Disable caching for this route segment
 export const dynamic = "force-dynamic";

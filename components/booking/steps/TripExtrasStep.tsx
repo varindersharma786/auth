@@ -489,7 +489,10 @@ export const TripExtrasStep = ({ onNext, onBack, tour }: TripExtrasStepProps) =>
                   type="radio"
                   name="donation"
                   checked={donationAmount === 0}
-                  onChange={() => setDonationAmount(0)}
+                  onChange={() => {
+                    setDonationAmount(0);
+                    setValue("donationAmount", 0);
+                  }}
                   className="h-4 w-4"
                 />
                 <span>No donation</span>
@@ -500,7 +503,10 @@ export const TripExtrasStep = ({ onNext, onBack, tour }: TripExtrasStepProps) =>
                   type="radio"
                   name="donation"
                   checked={donationAmount === 25}
-                  onChange={() => setDonationAmount(25)}
+                  onChange={() => {
+                    setDonationAmount(25);
+                    setValue("donationAmount", 25);
+                  }}
                   className="h-4 w-4"
                 />
                 <span>$25</span>
@@ -511,7 +517,10 @@ export const TripExtrasStep = ({ onNext, onBack, tour }: TripExtrasStepProps) =>
                   type="radio"
                   name="donation"
                   checked={donationAmount === 50}
-                  onChange={() => setDonationAmount(50)}
+                  onChange={() => {
+                    setDonationAmount(50);
+                    setValue("donationAmount", 50);
+                  }}
                   className="h-4 w-4"
                 />
                 <span>$50</span>
@@ -522,7 +531,10 @@ export const TripExtrasStep = ({ onNext, onBack, tour }: TripExtrasStepProps) =>
                   type="radio"
                   name="donation"
                   checked={donationAmount === 100}
-                  onChange={() => setDonationAmount(100)}
+                  onChange={() => {
+                    setDonationAmount(100);
+                    setValue("donationAmount", 100);
+                  }}
                   className="h-4 w-4"
                 />
                 <span>$100</span>
@@ -534,7 +546,10 @@ export const TripExtrasStep = ({ onNext, onBack, tour }: TripExtrasStepProps) =>
                 type="radio"
                 name="donation"
                 checked={donationAmount > 100}
-                onChange={() => setDonationAmount(150)}
+                onChange={() => {
+                  setDonationAmount(150);
+                  setValue("donationAmount", 150);
+                }}
                 className="h-4 w-4"
               />
               <span>Other amount:</span>
@@ -544,7 +559,10 @@ export const TripExtrasStep = ({ onNext, onBack, tour }: TripExtrasStepProps) =>
                 value={donationAmount > 100 ? donationAmount : ''}
                 onChange={(e) => {
                   const val = Number(e.target.value);
-                  if (val >= 0) setDonationAmount(val);
+                  if (val >= 0) {
+                    setDonationAmount(val);
+                    setValue("donationAmount", val);
+                  }
                 }}
                 placeholder="Enter amount"
                 className="border rounded px-2 py-1 w-24"
