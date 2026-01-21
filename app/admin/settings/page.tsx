@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Save, Globe } from "lucide-react";
+import { Loader2, Save, Globe, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import { toast } from "sonner";
 import {
   Card,
@@ -137,6 +137,95 @@ export default function SiteSettingsAdminPage() {
                   setSettings({ ...settings, address: e.target.value })
                 }
               />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Social Media Links</CardTitle>
+            <CardDescription>
+              Connect your social media profiles.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Facebook className="h-4 w-4" />
+                  Facebook
+                </Label>
+                <Input
+                  placeholder="https://facebook.com/yourpage"
+                  value={(settings.socialLinks as any)?.facebook || ""}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      socialLinks: {
+                        ...(settings.socialLinks as any),
+                        facebook: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Twitter className="h-4 w-4" />
+                  Twitter / X
+                </Label>
+                <Input
+                  placeholder="https://twitter.com/yourhandle"
+                  value={(settings.socialLinks as any)?.twitter || ""}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      socialLinks: {
+                        ...(settings.socialLinks as any),
+                        twitter: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Instagram className="h-4 w-4" />
+                  Instagram
+                </Label>
+                <Input
+                  placeholder="https://instagram.com/yourprofile"
+                  value={(settings.socialLinks as any)?.instagram || ""}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      socialLinks: {
+                        ...(settings.socialLinks as any),
+                        instagram: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Linkedin className="h-4 w-4" />
+                  LinkedIn
+                </Label>
+                <Input
+                  placeholder="https://linkedin.com/company/yourcompany"
+                  value={(settings.socialLinks as any)?.linkedin || ""}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      socialLinks: {
+                        ...(settings.socialLinks as any),
+                        linkedin: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

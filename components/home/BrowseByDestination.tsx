@@ -53,7 +53,7 @@ export default function BrowseByDestination() {
               transition={{ delay: index * 0.05 }}
             >
               <Link
-                href={localizeLink(`/destinations/slug/${dest.slug}`)}
+                href={localizeLink(`/destinations/${dest.slug}`)}
                 className="group block text-center"
               >
                 <div className="relative aspect-square rounded-full overflow-hidden mb-4 shadow-md border-4 border-white mx-auto max-w-[200px]">

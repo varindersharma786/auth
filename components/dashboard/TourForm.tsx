@@ -74,10 +74,19 @@ const tourSchema = z.object({
   maxGroupSize: z.number().min(1),
   style: z.string().min(1, "Style is required"),
   theme: z.string().min(1, "Theme is required"),
+  region: z.string().optional(),
+  physicalRating: z.number().min(1).max(5).optional(),
   priceFrom: z.number().min(0),
+  discountPrice: z.number().optional(),
   currency: z.string().min(1, "Currency is required"),
+  promoTag: z.string().optional(),
   mealsIncluded: z.boolean(),
   transport: z.string().min(1, "Transport info is required"),
+  depositAmount: z.number().optional(),
+  depositPercentage: z.number().optional(),
+  isFeatured: z.boolean().optional(),
+  isNew: z.boolean().optional(),
+  isSale: z.boolean().optional(),
   itinerary: z.array(
     z.object({
       day: z.number(),
@@ -139,10 +148,19 @@ export default function TourForm({ params }: TourFormProps) {
       maxGroupSize: 10,
       style: "ORIGINAL",
       theme: "",
+      region: "",
+      physicalRating: 1,
       priceFrom: 0,
+      discountPrice: undefined,
       currency: "USD",
+      promoTag: "",
       mealsIncluded: false,
       transport: "",
+      depositAmount: undefined,
+      depositPercentage: undefined,
+      isFeatured: false,
+      isNew: false,
+      isSale: false,
       itinerary: [],
       highlight: [],
       accommodation: [],
@@ -261,9 +279,29 @@ export default function TourForm({ params }: TourFormProps) {
             Craft an unforgettable experience for your travelers.
           </p>
         </div>
-        <Button variant="outline" onClick={() => router.back()}>
-          Cancel
-        </Button>
+        <div className="flex gap-2">
+          {params.id !== "new" && (
+            <>
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/admin/tours/${params.id}/departures`)}
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Manage Dates
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/admin/tours/${params.id}/rooms`)}
+              >
+                <Package className="h-4 w-4 mr-2" />
+                Room Options
+              </Button>
+            </>
+          )}
+          <Button variant="outline" onClick={() => router.back()}>
+            Cancel
+          </Button>
+        </div>
       </div>
 
       <Form {...form}>
@@ -574,6 +612,201 @@ export default function TourForm({ params }: TourFormProps) {
                           </FormItem>
                         )}
                       />
+                    </CardContent>
+                  </Card>
+
+                  <Card className="mt-6 border-none shadow-premium bg-zinc-50/50 dark:bg-zinc-900/50">
+                    <CardHeader>
+                      <CardTitle className="text-2xl flex items-center gap-2">
+                        <DollarSign className="h-6 w-6 text-primary" /> Additional
+                        Pricing & Details
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid gap-6 md:grid-cols-2">
+                      <FormField
+                        control={form.control}
+                        name="discountPrice"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Discounted Price (optional)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  className="pl-9"
+                                  type="number"
+                                  {...field}
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="depositAmount"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Deposit Amount (optional)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  className="pl-9"
+                                  type="number"
+                                  {...field}
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="depositPercentage"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Deposit Percentage (optional)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Input
+                                  className="pl-9"
+                                  type="number"
+                                  placeholder="e.g., 20 for 20%"
+                                  {...field}
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="region"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Region</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., East Africa, Southeast Asia" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="physicalRating"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Physical Rating (1-5)</FormLabel>
+                            <Select
+                              onValueChange={(value) => field.onChange(Number(value))}
+                              defaultValue={field.value?.toString()}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select rating" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {[1, 2, 3, 4, 5].map((rating) => (
+                                  <SelectItem key={rating} value={rating.toString()}>
+                                    {rating} {rating === 1 ? "Easy" : rating === 2 ? "Moderate" : rating === 3 ? "Challenging" : rating === 4 ? "Tough" : "Extreme"}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="promoTag"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Promo Tag (optional)</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., Top Deal, Bestseller" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="isFeatured"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel>Featured Tour</FormLabel>
+                                <p className="text-sm text-muted-foreground">
+                                  Show in featured section
+                                </p>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="isNew"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel>New Tour</FormLabel>
+                                <p className="text-sm text-muted-foreground">
+                                  Mark as new release
+                                </p>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="isSale"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel>On Sale</FormLabel>
+                                <p className="text-sm text-muted-foreground">
+                                  Show sale badge
+                                </p>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </CardContent>
                   </Card>
 

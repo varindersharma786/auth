@@ -1,6 +1,10 @@
-import { useFormContext } from "react-hook-form";
+"use client";
+
+import { useFormContext, useFieldArray } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -9,178 +13,331 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { BookingFormValues } from "../BookingClient";
-import { Info } from "lucide-react";
+import { Info, User, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface TravellerDetailsStepProps {
   onNext: () => void;
+  onBack: () => void;
 }
 
-export const TravellerDetailsStep = ({ onNext }: TravellerDetailsStepProps) => {
+export const TravellerDetailsStep = ({ onNext, onBack }: TravellerDetailsStepProps) => {
   const {
     register,
+    control,
+    watch,
     formState: { errors },
   } = useFormContext<BookingFormValues>();
 
+  const { fields } = useFieldArray({
+    control,
+    name: "travelers",
+  });
+
+  const numberOfTravelers = watch("numberOfTravelers");
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
-      {/* Disclaimer */}
-      <div className="bg-sky-50 dark:bg-sky-950/30 border-l-4 border-sky-600 p-4 space-y-2 text-sky-800 dark:text-sky-300">
-        <h4 className="font-bold flex items-center gap-2">
+      {/* Important Info Banner */}
+      <div className="bg-blue-50 border-l-4 border-blue-600 p-4 space-y-2">
+        <h4 className="font-bold flex items-center gap-2 text-blue-900">
           <Info className="w-5 h-5" />
-          Full payment required to request your place
+          Important: Passport information required
         </h4>
-        <p className="text-sm">
-          As your trip departs soon, we&apos;ll check if there&apos;s space and
-          get back to you in 2-4 business days. If unavailable, we&apos;ll
-          refund you.
+        <p className="text-sm text-blue-800">
+          Please ensure all names match your passport exactly. This information is required for
+          booking confirmations and border crossings.
         </p>
-        <ul className="list-disc pl-5 text-sm space-y-1 mt-2">
-          <li>
-            <strong>Important:</strong> Don&apos;t book non-refundable travel
-            until your trip is confirmed.
-          </li>
-          <li>
-            <strong>Before you travel:</strong> Check{" "}
-            <a href="#" className="underline text-red-600">
-              visa and entry requirements
-            </a>
-            .
-          </li>
+        <ul className="list-disc pl-5 text-sm space-y-1 mt-2 text-blue-800">
+          <li>Check visa and entry requirements for your destination</li>
+          <li>Passport must be valid for at least 6 months from departure date</li>
+          <li>All travelers must have travel insurance (can be added in next step)</li>
         </ul>
       </div>
 
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center text-xs">
-            1
-          </span>
-          1. Primary traveller details
-        </h2>
+      {/* Traveler Forms */}
+      {fields.map((field, index) => (
+        <Card key={field.id} className="border-2">
+          <CardContent className="p-6 space-y-6">
+            <div className="flex items-center gap-3 pb-4 border-b">
+              <div className="p-3 bg-primary/10 rounded-full">
+                <User className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold">
+                  {index === 0 ? "Lead Traveler" : `Traveler ${index + 1}`}
+                  {index === 0 && (
+                    <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-1 rounded-full">
+                      Lead Guest
+                    </span>
+                  )}
+                </h3>
+                <p className="text-sm text-zinc-600">
+                  {index === 0 ? "This person will receive all booking communications" : "Additional passenger information"}
+                </p>
+              </div>
+            </div>
 
-        <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 space-y-6">
-          <h3 className="font-bold text-lg">Personal details</h3>
+            {/* Personal Details */}
+            <div>
+              <h4 className="font-semibold mb-4">Personal information</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`travelers.${index}.title`}>Title *</Label>
+                  <Select
+                    defaultValue=""
+                    onValueChange={(val) => {
+                      // Handle select change
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select title" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Mr">Mr</SelectItem>
+                      <SelectItem value="Mrs">Mrs</SelectItem>
+                      <SelectItem value="Ms">Ms</SelectItem>
+                      <SelectItem value="Miss">Miss</SelectItem>
+                      <SelectItem value="Dr">Dr</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <input
+                    type="hidden"
+                    {...register(`travelers.${index}.title` as const)}
+                  />
+                </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor={`travelers.${index}.firstName`}>First name (as per passport) *</Label>
+                  <Input
+                    id={`travelers.${index}.firstName`}
+                    {...register(`travelers.${index}.firstName` as const)}
+                    className={errors.travelers?.[index]?.firstName ? "border-red-500" : ""}
+                  />
+                  {errors.travelers?.[index]?.firstName && (
+                    <p className="text-xs text-red-500">
+                      {errors.travelers[index]?.firstName?.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`travelers.${index}.middleName`}>Middle name (optional)</Label>
+                  <Input
+                    id={`travelers.${index}.middleName`}
+                    {...register(`travelers.${index}.middleName` as const)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`travelers.${index}.lastName`}>Last name (as per passport) *</Label>
+                  <Input
+                    id={`travelers.${index}.lastName`}
+                    {...register(`travelers.${index}.lastName` as const)}
+                    className={errors.travelers?.[index]?.lastName ? "border-red-500" : ""}
+                  />
+                  {errors.travelers?.[index]?.lastName && (
+                    <p className="text-xs text-red-500">
+                      {errors.travelers[index]?.lastName?.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`travelers.${index}.dateOfBirth`}>Date of birth *</Label>
+                  <Input
+                    id={`travelers.${index}.dateOfBirth`}
+                    type="date"
+                    {...register(`travelers.${index}.dateOfBirth` as const)}
+                    className={errors.travelers?.[index]?.dateOfBirth ? "border-red-500" : ""}
+                  />
+                  {errors.travelers?.[index]?.dateOfBirth && (
+                    <p className="text-xs text-red-500">
+                      {errors.travelers[index]?.dateOfBirth?.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`travelers.${index}.nationality`}>Nationality</Label>
+                  <Input
+                    id={`travelers.${index}.nationality`}
+                    {...register(`travelers.${index}.nationality` as const)}
+                    placeholder="e.g., American, British"
+                  />
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor={`travelers.${index}.passportNo`}>Passport number (optional)</Label>
+                  <Input
+                    id={`travelers.${index}.passportNo`}
+                    {...register(`travelers.${index}.passportNo` as const)}
+                    placeholder="Can be provided later"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Contact Details (Lead traveler only) */}
+            {index === 0 && (
+              <div>
+                <h4 className="font-semibold mb-4">Contact information</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor={`travelers.${index}.email`}>Email address *</Label>
+                    <Input
+                      id={`travelers.${index}.email`}
+                      type="email"
+                      {...register(`travelers.${index}.email` as const)}
+                      className={errors.travelers?.[index]?.email ? "border-red-500" : ""}
+                    />
+                    {errors.travelers?.[index]?.email && (
+                      <p className="text-xs text-red-500">
+                        {errors.travelers[index]?.email?.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`travelers.${index}.phone`}>Phone number *</Label>
+                    <Input
+                      id={`travelers.${index}.phone`}
+                      {...register(`travelers.${index}.phone` as const)}
+                      placeholder="Include country code"
+                      className={errors.travelers?.[index]?.phone ? "border-red-500" : ""}
+                    />
+                    {errors.travelers?.[index]?.phone && (
+                      <p className="text-xs text-red-500">
+                        {errors.travelers[index]?.phone?.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor={`travelers.${index}.address`}>Home address *</Label>
+                    <Textarea
+                      id={`travelers.${index}.address`}
+                      {...register(`travelers.${index}.address` as const)}
+                      placeholder="Street address, City, State/Province, Postal Code, Country"
+                      rows={3}
+                      className={errors.travelers?.[index]?.address ? "border-red-500" : ""}
+                    />
+                    {errors.travelers?.[index]?.address && (
+                      <p className="text-xs text-red-500">
+                        {errors.travelers[index]?.address?.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+
+      {/* Emergency Contact */}
+      <Card className="border-2 border-orange-200 bg-orange-50/50">
+        <CardContent className="p-6 space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-orange-200">
+            <div className="p-3 bg-orange-500/10 rounded-full">
+              <AlertCircle className="h-6 w-6 text-orange-600" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold">Emergency Contact</h3>
+              <p className="text-sm text-zinc-600">
+                Someone we can contact in case of emergency (not traveling with you)
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="emergencyContact.name">Full name *</Label>
+              <Input
+                id="emergencyContact.name"
+                {...register("emergencyContact.name")}
+                className={errors.emergencyContact?.name ? "border-red-500" : ""}
+              />
+              {errors.emergencyContact?.name && (
+                <p className="text-xs text-red-500">
+                  {errors.emergencyContact.name.message}
+                </p>
+              )}
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="title">Title *</Label>
-              <Select
-                onValueChange={(val) => {
-                  // Normally connect to Rhf with Controller or simple register via hidden input
-                }}
-                defaultValue="Mr"
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select title" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Mr">Mr</SelectItem>
-                  <SelectItem value="Mrs">Mrs</SelectItem>
-                  <SelectItem value="Ms">Ms</SelectItem>
-                  <SelectItem value="Dr">Dr</SelectItem>
-                </SelectContent>
-              </Select>
-              {/* For demo simply registering hidden/text input behind select or assume select works */}
-              <input type="hidden" {...register("title")} value="Mr" />
+              <Label htmlFor="emergencyContact.phone">Phone number *</Label>
+              <Input
+                id="emergencyContact.phone"
+                {...register("emergencyContact.phone")}
+                placeholder="Include country code"
+                className={errors.emergencyContact?.phone ? "border-red-500" : ""}
+              />
+              {errors.emergencyContact?.phone && (
+                <p className="text-xs text-red-500">
+                  {errors.emergencyContact.phone.message}
+                </p>
+              )}
             </div>
 
-            <div className="flex items-end pb-2">
-              <span className="text-sm font-bold flex items-center gap-1 cursor-help">
-                <Info className="w-4 h-4" /> Why do we need this?
-              </span>
+            <div className="space-y-2">
+              <Label htmlFor="emergencyContact.relationship">Relationship *</Label>
+              <Input
+                id="emergencyContact.relationship"
+                {...register("emergencyContact.relationship")}
+                placeholder="e.g., Spouse, Parent, Sibling"
+                className={errors.emergencyContact?.relationship ? "border-red-500" : ""}
+              />
+              {errors.emergencyContact?.relationship && (
+                <p className="text-xs text-red-500">
+                  {errors.emergencyContact.relationship.message}
+                </p>
+              )}
             </div>
           </div>
+        </CardContent>
+      </Card>
 
-          <div className="space-y-2">
-            <Label htmlFor="firstName">First name (as per passport)*</Label>
-            <Input
-              id="firstName"
-              {...register("firstName")}
-              className={errors.firstName ? "border-red-500" : ""}
-            />
-            {errors.firstName && (
-              <p className="text-xs text-red-500">{errors.firstName.message}</p>
-            )}
-          </div>
+      {/* Special Requests */}
+      <Card>
+        <CardContent className="p-6 space-y-4">
+          <h3 className="text-lg font-semibold">Special requests (optional)</h3>
+          <p className="text-sm text-zinc-600">
+            Let us know about any dietary requirements, medical conditions, or special needs
+          </p>
+          <Textarea
+            {...register("specialRequests")}
+            placeholder="e.g., Vegetarian meals, mobility assistance, allergies..."
+            rows={4}
+          />
+        </CardContent>
+      </Card>
 
-          <div className="space-y-2">
-            <Label htmlFor="middleName">Middle name (as per passport)</Label>
-            <Input id="middleName" {...register("middleName")} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Last name (as per passport)*</Label>
-            <Input
-              id="lastName"
-              {...register("lastName")}
-              className={errors.lastName ? "border-red-500" : ""}
-            />
-            {errors.lastName && (
-              <p className="text-xs text-red-500">{errors.lastName.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label>Date of birth *</Label>
-            <div className="grid grid-cols-3 gap-4">
-              <Input placeholder="Day" {...register("dobDay")} />
-              <Input placeholder="Month" {...register("dobMonth")} />
-              <Input placeholder="Year" {...register("dobYear")} />
-            </div>
-          </div>
-
-          <Separator className="my-6" />
-
-          <h3 className="font-bold text-lg">Contact details</h3>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input id="email" type="email" {...register("email")} />
-            {errors.email && (
-              <p className="text-xs text-red-500">{errors.email.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">Contact number *</Label>
-            <Input id="phone" {...register("phone")} />
-            {errors.phone && (
-              <p className="text-xs text-red-500">{errors.phone.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="address">Address *</Label>
-            <Input
-              id="address"
-              placeholder="Start typing an address, e.g. 123 Main St"
-              {...register("address")}
-            />
-            {errors.address && (
-              <p className="text-xs text-red-500">{errors.address.message}</p>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              className="mt-2 text-xs"
-            >
-              Enter address manually
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex justify-end">
+      {/* Navigation */}
+      <div className="flex justify-between pt-6">
         <Button
-          onClick={onNext}
-          className="bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black"
+          type="button"
+          onClick={onBack}
+          variant="outline"
+          size="lg"
+          className="gap-2"
         >
-          Continue &gt;
+          <ChevronLeft className="h-4 w-4" />
+          Back to rooms
+        </Button>
+        <Button
+          type="button"
+          onClick={onNext}
+          size="lg"
+          className="gap-2"
+        >
+          Continue to trip extras
+          <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
     </div>
   );
 };
-
-import { Separator } from "@/components/ui/separator";
