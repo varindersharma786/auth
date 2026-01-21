@@ -1,9 +1,10 @@
-import { Tour } from "@/lib/api";
+import { Tour, TourDeparture, RoomOption } from "@/lib/api";
+import { BookingFormValues } from "./BookingClient";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Star, ChevronDown, ChevronUp } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -14,36 +15,90 @@ import { useCurrency } from "@/context/CurrencyContext";
 interface BookingSidebarProps {
   tour: Tour;
   currentStep: number;
+  formValues: BookingFormValues;
+  departures: TourDeparture[];
+  roomOptions: RoomOption[];
 }
 
-export const BookingSidebar = ({ tour }: BookingSidebarProps) => {
+export const BookingSidebar = ({
+  tour,
+  currentStep,
+  formValues,
+  departures,
+  roomOptions,
+}: BookingSidebarProps) => {
   const [isOpen, setIsOpen] = useState(true);
+  const [isRoomOpen, setIsRoomOpen] = useState(true);
+  const [isExtrasOpen, setIsExtrasOpen] = useState(true);
+
   const { currency, currencySymbol, exchangeRate } = useCurrency();
 
-  // Price calculations
-  const convert = (amount: number) => amount * exchangeRate;
+  // Helper to format currency
   const format = (amount: number) =>
     new Intl.NumberFormat(undefined, { style: "currency", currency }).format(
-      amount
+      amount * exchangeRate,
     );
 
-  const priceFrom = convert(tour.priceFrom);
-  const discount = convert(725.5);
-  const total = priceFrom - discount;
+  // --- Calculations ---
 
-  // Calculate generic dates for demo
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() + 30); // Start in 30 days
-  const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + tour.durationDays);
+  // 1. Departure & Base Price
+  const selectedDeparture = useMemo(
+    () => departures.find((d) => d.id === formValues.departureId),
+    [departures, formValues.departureId],
+  );
+
+  const travelersCount = formValues.numberOfTravelers || 1;
+  const basePricePerPerson = selectedDeparture?.price || tour.priceFrom;
+  const basePriceTotal = basePricePerPerson * travelersCount;
+
+  // Dates
+  const startDate = selectedDeparture
+    ? new Date(selectedDeparture.departureDate)
+    : new Date(); // Fallback to now if nothing selected
+  const endDate = selectedDeparture
+    ? new Date(selectedDeparture.endDate)
+    : new Date(new Date().setDate(new Date().getDate() + tour.durationDays));
+
+  // 2. Room Option
+  const selectedRoom = useMemo(
+    () => roomOptions.find((r) => r.id === formValues.roomOptionId),
+    [roomOptions, formValues.roomOptionId],
+  );
+  const roomPriceTotal = (selectedRoom?.priceAdd || 0) * travelersCount;
+
+  // 3. Extras
+  // Assuming addOns will have price info eventually, but relying on quantity for now if price is missing in schema?
+  // The schema for addOns is { id: string, quantity: number }. We need the price of the addOn.
+  // TripExtrasStep likely has the full addOn objects. But Sidebar needs them too basically.
+  // For now, let's assume `tripExtras` on `tour` object has prices.
+  const extrasTotal = (formValues.addOns || []).reduce((acc, addon) => {
+    const extra = tour.tripExtras.find((e) => e.id === addon.id);
+    return acc + (extra?.price || 0) * addon.quantity;
+  }, 0);
+
+  // 4. Donation
+  const donationTotal = formValues.donationAmount || 0;
+
+  // Total
+  const total = basePriceTotal + roomPriceTotal + extrasTotal + donationTotal;
+
+  // Render Helpers
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
 
   return (
     <div className="sticky top-24 space-y-4">
       {/* Availability Warning */}
-      <div className="bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/50 rounded-md p-3 flex items-center gap-2 text-red-600 dark:text-red-400 text-sm font-medium">
-        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-        Only 4 spaces left
-      </div>
+      {selectedDeparture && selectedDeparture.availableSpaces < 5 && (
+        <div className="bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/50 rounded-md p-3 flex items-center gap-2 text-red-600 dark:text-red-400 text-sm font-medium">
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          Only {selectedDeparture.availableSpaces} spaces left
+        </div>
+      )}
 
       <Card className="shadow-lg border-zinc-200 dark:border-zinc-800 overflow-hidden">
         <CardHeader className="p-0">
@@ -78,11 +133,11 @@ export const BookingSidebar = ({ tour }: BookingSidebarProps) => {
               <div>
                 <p className="font-semibold">Start</p>
                 <p className="text-muted-foreground">
-                  {startDate.toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })}
+                  {selectedDeparture ? (
+                    formatDate(startDate)
+                  ) : (
+                    <span className="text-zinc-400 italic">Select date</span>
+                  )}
                 </p>
                 <p className="text-muted-foreground uppercase">
                   {tour.startLocation}
@@ -91,11 +146,11 @@ export const BookingSidebar = ({ tour }: BookingSidebarProps) => {
               <div>
                 <p className="font-semibold">Finish</p>
                 <p className="text-muted-foreground">
-                  {endDate.toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })}
+                  {selectedDeparture ? (
+                    formatDate(endDate)
+                  ) : (
+                    <span className="text-zinc-400 italic">—</span>
+                  )}
                 </p>
                 <p className="text-muted-foreground uppercase">
                   {tour.endLocation}
@@ -108,6 +163,7 @@ export const BookingSidebar = ({ tour }: BookingSidebarProps) => {
 
           {/* Price Breakdown */}
           <div className="space-y-4">
+            {/* TRIP SECTION */}
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
               <div className="flex items-center justify-between font-medium">
                 <span>Trip</span>
@@ -123,40 +179,98 @@ export const BookingSidebar = ({ tour }: BookingSidebarProps) => {
               </div>
               <CollapsibleContent className="space-y-2 mt-2 text-sm text-muted-foreground">
                 <div className="flex justify-between">
-                  <span>1 traveller</span>
-                  <span>{format(priceFrom)}</span>
+                  <span>
+                    {travelersCount} traveler{travelersCount > 1 ? "s" : ""} x{" "}
+                    {format(basePricePerPerson)}
+                  </span>
+                  <span>{format(basePriceTotal)}</span>
                 </div>
               </CollapsibleContent>
             </Collapsible>
 
             <Separator />
 
-            <div className="flex items-center justify-between font-medium">
-              <span>Room options</span>
-              <ChevronDown className="w-4 h-4 text-muted-foreground" />
-            </div>
+            {/* ROOM OPTIONS */}
+            <Collapsible open={isRoomOpen} onOpenChange={setIsRoomOpen}>
+              <div className="flex items-center justify-between font-medium">
+                <span>Room options</span>
+                {selectedRoom && (
+                  <CollapsibleTrigger asChild>
+                    <button className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded">
+                      {isRoomOpen ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </button>
+                  </CollapsibleTrigger>
+                )}
+              </div>
+              {selectedRoom && (
+                <CollapsibleContent className="space-y-2 mt-2 text-sm text-muted-foreground">
+                  <div className="flex justify-between">
+                    <span>{selectedRoom.roomType}</span>
+                    <span>{format(roomPriceTotal)}</span>
+                  </div>
+                </CollapsibleContent>
+              )}
+            </Collapsible>
 
             <Separator />
 
-            <div className="flex items-center justify-between font-medium">
-              <span>Pre & post-trip extras</span>
-              <ChevronDown className="w-4 h-4 text-muted-foreground" />
-            </div>
+            {/* PRE & POST TRIP EXTRAS */}
+            <Collapsible open={isExtrasOpen} onOpenChange={setIsExtrasOpen}>
+              <div className="flex items-center justify-between font-medium">
+                <span>Pre & post-trip extras</span>
+                {extrasTotal > 0 && (
+                  <CollapsibleTrigger asChild>
+                    <button className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded">
+                      {isExtrasOpen ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </button>
+                  </CollapsibleTrigger>
+                )}
+              </div>
+              {extrasTotal > 0 && (
+                <CollapsibleContent className="space-y-2 mt-2 text-sm text-muted-foreground">
+                  {(formValues.addOns || []).map((addon, idx) => {
+                    const extra = tour.tripExtras.find(
+                      (e) => e.id === addon.id,
+                    );
+                    if (!extra || addon.quantity === 0) return null;
+                    return (
+                      <div key={idx} className="flex justify-between">
+                        <span>
+                          {addon.quantity}x {extra.name}
+                        </span>
+                        <span>
+                          {format((extra.price || 0) * addon.quantity)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </CollapsibleContent>
+              )}
+            </Collapsible>
 
             <Separator />
 
+            {/* DONATION */}
             <div className="flex items-center justify-between font-medium">
               <span>Donation</span>
-              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+              {donationTotal > 0 && (
+                <span className="text-sm text-muted-foreground">
+                  {format(donationTotal)}
+                </span>
+              )}
             </div>
 
             <Separator />
 
             <div className="space-y-2">
-              <div className="flex justify-between text-green-600 font-medium">
-                <span>Discount</span>
-                <span>-{format(discount)}</span>
-              </div>
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
                 <span>{format(total)}</span>
@@ -165,42 +279,6 @@ export const BookingSidebar = ({ tour }: BookingSidebarProps) => {
                 GST included
               </p>
             </div>
-          </div>
-
-          <div className="pt-4 flex justify-between items-center text-lg font-bold border-t border-zinc-200 dark:border-zinc-800">
-            <span>Pay now</span>
-            <span>{format(total)}</span>
-          </div>
-
-          <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-md text-xs space-y-2 text-blue-800 dark:text-blue-300">
-            <p className="flex gap-2">
-              <span className="font-bold">✓</span> We offer{" "}
-              <strong>flexible deposits</strong>, pay as you go
-            </p>
-            <p className="flex gap-2">
-              <span className="font-bold">🔒</span>{" "}
-              <strong>Secure today&apos;s price</strong> before it changes
-            </p>
-            <p className="flex gap-2">
-              <span className="font-bold">🛡️</span> We prioritise{" "}
-              <strong>protecting your data</strong>
-            </p>
-            <p className="flex gap-2">
-              <span className="font-bold">📞</span> We offer{" "}
-              <strong>24/7 global support</strong>. Phone us on{" "}
-              <a href="#" className="underline">
-                +61 3 7043 6363
-              </a>
-            </p>
-          </div>
-
-          <div className="text-center">
-            <button
-              type="button"
-              className="text-xs font-semibold hover:underline"
-            >
-              How to redeem credit
-            </button>
           </div>
         </CardContent>
       </Card>

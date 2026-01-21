@@ -44,25 +44,31 @@ const bookingSchema = z.object({
 
   // Step 2: Room Configuration
   roomOptionId: z.string().min(1, "Please select a room type"),
-  roommates: z.array(z.object({
-    name: z.string().optional(),
-    shareWith: z.string().optional(),
-  })).optional(),
+  roommates: z
+    .array(
+      z.object({
+        name: z.string().optional(),
+        shareWith: z.string().optional(),
+      }),
+    )
+    .optional(),
 
   // Step 3: Traveller Details
-  travelers: z.array(z.object({
-    title: z.string().min(1, "Title is required"),
-    firstName: z.string().min(2, "First name is required"),
-    middleName: z.string().optional(),
-    lastName: z.string().min(2, "Last name is required"),
-    dateOfBirth: z.string().min(1, "Date of birth is required"),
-    email: z.string().email("Invalid email"),
-    phone: z.string().min(5, "Phone is required"),
-    nationality: z.string().optional(),
-    passportNo: z.string().optional(),
-    address: z.string().min(5, "Address is required"),
-    isLeadGuest: z.boolean().optional(),
-  })),
+  travelers: z.array(
+    z.object({
+      title: z.string().min(1, "Title is required"),
+      firstName: z.string().min(2, "First name is required"),
+      middleName: z.string().optional(),
+      lastName: z.string().min(2, "Last name is required"),
+      dateOfBirth: z.string().min(1, "Date of birth is required"),
+      email: z.string().email("Invalid email"),
+      phone: z.string().min(5, "Phone is required"),
+      nationality: z.string().optional(),
+      passportNo: z.string().optional(),
+      address: z.string().min(5, "Address is required"),
+      isLeadGuest: z.boolean().optional(),
+    }),
+  ),
   emergencyContact: z.object({
     name: z.string().min(2, "Emergency contact name required"),
     phone: z.string().min(5, "Emergency contact phone required"),
@@ -71,10 +77,14 @@ const bookingSchema = z.object({
   specialRequests: z.string().optional(),
 
   // Step 4: Trip Extras
-  addOns: z.array(z.object({
-    id: z.string(),
-    quantity: z.number(),
-  })).optional(),
+  addOns: z
+    .array(
+      z.object({
+        id: z.string(),
+        quantity: z.number(),
+      }),
+    )
+    .optional(),
   insuranceRequired: z.boolean().default(false),
   insuranceDetails: z.string().optional(),
   donationAmount: z.number().optional(),
@@ -99,15 +109,19 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
     const fetchData = async () => {
       try {
         const [depsResponse, roomsResponse] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/departures/tour/${tour.id}`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/room-options/tour/${tour.id}`),
+          fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/departures/tour/${tour.id}`,
+          ),
+          fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/room-options/tour/${tour.id}`,
+          ),
         ]);
-        
+
         if (depsResponse.ok) {
           const depsData = await depsResponse.json();
           setDepartures(depsData);
         }
-        
+
         if (roomsResponse.ok) {
           const roomsData = await roomsResponse.json();
           setRoomOptions(roomsData);
@@ -129,19 +143,21 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
       numberOfTravelers: 1,
       departureId: "",
       roomOptionId: "",
-      travelers: [{
-        title: "",
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        dateOfBirth: "",
-        email: "",
-        phone: "",
-        nationality: "",
-        passportNo: "",
-        address: "",
-        isLeadGuest: true, // First traveler is always the lead guest
-      }],
+      travelers: [
+        {
+          title: "",
+          firstName: "",
+          middleName: "",
+          lastName: "",
+          dateOfBirth: "",
+          email: "",
+          phone: "",
+          nationality: "",
+          passportNo: "",
+          address: "",
+          isLeadGuest: true, // First traveler is always the lead guest
+        },
+      ],
       emergencyContact: {
         name: "",
         phone: "",
@@ -167,7 +183,7 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
   useEffect(() => {
     if (numberOfTravelers && travelers) {
       const currentTravelersCount = travelers.length;
-      
+
       if (currentTravelersCount < numberOfTravelers) {
         // Add new travelers
         const newTravelers = [...travelers];
@@ -186,7 +202,7 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
             isLeadGuest: false, // Additional travelers are not lead guests
           });
         }
-        
+
         // Ensure all travelers have isLeadGuest property set
         for (let i = 0; i < newTravelers.length; i++) {
           if (newTravelers[i].isLeadGuest === undefined) {
@@ -199,7 +215,7 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
         const updatedTravelers = travelers.slice(0, numberOfTravelers);
         setValue("travelers", updatedTravelers);
       }
-      
+
       // Ensure first traveler is always the lead guest
       if (travelers.length > 0) {
         setValue("travelers.0.isLeadGuest", true);
@@ -242,19 +258,25 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
     console.log("Booking submitted:", data);
     try {
       // Get start and end dates from selected departure
-      const selectedDeparture = departures.find(dep => dep.id === data.departureId);
-      
+      const selectedDeparture = departures.find(
+        (dep) => dep.id === data.departureId,
+      );
+
       // Submit booking to backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tourId: tour.id,
-          startDate: selectedDeparture?.departureDate || new Date().toISOString(),
-          endDate: selectedDeparture?.endDate || new Date().toISOString(),
-          ...data,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bookings`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tourId: tour.id,
+            startDate:
+              selectedDeparture?.departureDate || new Date().toISOString(),
+            endDate: selectedDeparture?.endDate || new Date().toISOString(),
+            ...data,
+          }),
+        },
+      );
 
       if (response.ok) {
         alert("Booking submitted successfully!");
@@ -302,8 +324,8 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
                     isCompleted
                       ? "bg-primary border-primary text-primary-foreground"
                       : isCurrent
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background border-gray-300 dark:border-gray-600 text-muted-foreground"
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background border-gray-300 dark:border-gray-600 text-muted-foreground",
                   )}
                 >
                   {isCompleted ? (
@@ -315,7 +337,7 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
                 <span
                   className={cn(
                     "text-xs font-medium",
-                    isCurrent ? "text-primary" : "text-muted-foreground"
+                    isCurrent ? "text-primary" : "text-muted-foreground",
                   )}
                 >
                   {step.label}
@@ -336,28 +358,25 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
               {currentStep === 1 && (
-                <DateSelectionStep 
-                  onNext={nextStep} 
+                <DateSelectionStep
+                  onNext={nextStep}
                   departures={departures}
                   tour={tour}
                 />
               )}
               {currentStep === 2 && (
-                <RoomConfigurationStep 
-                  onNext={nextStep} 
+                <RoomConfigurationStep
+                  onNext={nextStep}
                   onBack={prevStep}
                   roomOptions={roomOptions}
                 />
               )}
               {currentStep === 3 && (
-                <TravellerDetailsStep 
-                  onNext={nextStep} 
-                  onBack={prevStep}
-                />
+                <TravellerDetailsStep onNext={nextStep} onBack={prevStep} />
               )}
               {currentStep === 4 && (
-                <TripExtrasStep 
-                  onNext={nextStep} 
+                <TripExtrasStep
+                  onNext={nextStep}
                   onBack={prevStep}
                   tour={tour}
                 />
@@ -371,7 +390,13 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
 
         {/* Sidebar */}
         <div className="lg:col-span-1">
-          <BookingSidebar tour={tour} currentStep={currentStep} />
+          <BookingSidebar
+            tour={tour}
+            currentStep={currentStep}
+            formValues={watch()}
+            departures={departures}
+            roomOptions={roomOptions}
+          />
         </div>
       </div>
     </div>
