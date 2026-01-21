@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Tour } from "@/lib/api";
-import { api } from "@/lib/api";
+import { toast } from "sonner";
+import { Tour, TourDeparture, RoomOption } from "@/lib/api";
 
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,26 +14,9 @@ import { BookingSidebar } from "./BookingSidebar";
 import { DateSelectionStep } from "./steps/DateSelectionStep";
 import { TravellerDetailsStep } from "./steps/TravellerDetailsStep";
 import { RoomConfigurationStep } from "./steps/RoomConfigurationStep";
+
 interface BookingClientProps {
   tour: Tour;
-}
-
-interface TourDeparture {
-  id: string;
-  departureDate: string;
-  endDate: string;
-  price: number;
-  discountedPrice?: number;
-  availableSpaces: number;
-  status: string;
-}
-
-interface RoomOption {
-  id: string;
-  roomType: string;
-  description?: string;
-  priceAdd: number;
-  isDefault: boolean;
 }
 
 // Define the schema for the entire wizard
@@ -54,21 +37,55 @@ const bookingSchema = z.object({
     .optional(),
 
   // Step 3: Traveller Details
-  travelers: z.array(
-    z.object({
-      title: z.string().min(1, "Title is required"),
-      firstName: z.string().min(2, "First name is required"),
-      middleName: z.string().optional(),
-      lastName: z.string().min(2, "Last name is required"),
-      dateOfBirth: z.string().min(1, "Date of birth is required"),
-      email: z.string().email("Invalid email"),
-      phone: z.string().min(5, "Phone is required"),
-      nationality: z.string().optional(),
-      passportNo: z.string().optional(),
-      address: z.string().min(5, "Address is required"),
-      isLeadGuest: z.boolean().optional(),
+  travelers: z
+    .array(
+      z.object({
+        title: z.string().min(1, "Title is required"),
+        firstName: z.string().min(2, "First name is required"),
+        middleName: z.string().optional(),
+        lastName: z.string().min(2, "Last name is required"),
+        dateOfBirth: z.string().min(1, "Date of birth is required"),
+        email: z.string().optional(),
+        phone: z.string().optional(),
+        nationality: z.string().optional(),
+        passportNo: z.string().optional(),
+        address: z.string().optional(),
+        isLeadGuest: z.boolean().optional(),
+      }),
+    )
+    .superRefine((items, ctx) => {
+      items.forEach((item, index) => {
+        // Index 0 is always lead guest, or if explicitly marked
+        const isLead = index === 0 || item.isLeadGuest;
+
+        if (isLead) {
+          if (
+            !item.email ||
+            !z.string().email().safeParse(item.email).success
+          ) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Invalid email",
+              path: [index, "email"],
+            });
+          }
+          if (!item.phone || item.phone.length < 5) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Phone number is required",
+              path: [index, "phone"],
+            });
+          }
+          if (!item.address || item.address.length < 5) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Address is required",
+              path: [index, "address"],
+            });
+          }
+        }
+      });
     }),
-  ),
   emergencyContact: z.object({
     name: z.string().min(2, "Emergency contact name required"),
     phone: z.string().min(5, "Emergency contact phone required"),
@@ -246,6 +263,10 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
     if (isValid) {
       setCurrentStep((prev) => prev + 1);
       window.scrollTo(0, 0);
+    } else {
+      toast.error("Please fill in all required fields", {
+        description: "Check for any error messages on the form.",
+      });
     }
   };
 
@@ -279,14 +300,14 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
       );
 
       if (response.ok) {
-        alert("Booking submitted successfully!");
+        toast.success("Booking submitted successfully!"); // Also upgraded this to toast
         // Redirect to confirmation page or dashboard
       } else {
-        alert("Failed to submit booking. Please try again.");
+        toast.error("Failed to submit booking. Please try again.");
       }
     } catch (error) {
       console.error("Booking error:", error);
-      alert("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
     }
   };
 
