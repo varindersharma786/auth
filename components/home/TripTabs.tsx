@@ -89,7 +89,23 @@ export default function TripTabs() {
   );
 }
 
-function TripCard({ trip, exchangeRate, symbol }: any) {
+interface TripCardProps {
+  trip: {
+    id: string;
+    title: string;
+    image: string;
+    duration: string;
+    rating: number;
+    reviews: number;
+    price: number;
+    category: string;
+    badge: string;
+  };
+  exchangeRate: number;
+  symbol: string;
+}
+
+function TripCard({ trip, exchangeRate, symbol }: TripCardProps) {
   const finalPrice = Math.round(trip.price * exchangeRate);
 
   return (

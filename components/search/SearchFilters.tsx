@@ -47,11 +47,24 @@ const THEMES = [
 ];
 const PHYSICAL_RATINGS = [1, 2, 3, 4, 5];
 
+interface FilterState {
+  regions: string[];
+  styles: string[];
+  themes: string[];
+  physicalRatings: number[];
+  isNew: boolean;
+  isSale: boolean;
+  minPrice: string;
+  maxPrice: string;
+  minDuration: string;
+  maxDuration: string;
+}
+
 export function SearchFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [filters, setFilters] = React.useState({
+  const [filters, setFilters] = React.useState<FilterState>({
     regions: searchParams.get("regions")?.split(",") || [],
     styles: searchParams.get("styles")?.split(",") || [],
     themes: searchParams.get("themes")?.split(",") || [],
@@ -65,7 +78,7 @@ export function SearchFilters() {
     maxDuration: searchParams.get("maxDuration") || "",
   });
 
-  const updateFilters = (newFilters: any) => {
+  const updateFilters = (newFilters: Partial<FilterState>) => {
     const params = new URLSearchParams(searchParams.toString());
 
     Object.entries(newFilters).forEach(([key, value]) => {
@@ -85,18 +98,21 @@ export function SearchFilters() {
     router.push(`?${params.toString()}`);
   };
 
-  const handleCheckboxChange = (category: string, item: any) => {
-    const current = (filters as any)[category];
-    const next = current.includes(item)
-      ? current.filter((i: any) => i !== item)
+  const handleCheckboxChange = (
+    category: keyof FilterState,
+    item: string | number,
+  ) => {
+    const current = filters[category] as (string | number)[];
+    const next = current.includes(item as never)
+      ? current.filter((i) => i !== item)
       : [...current, item];
 
     setFilters({ ...filters, [category]: next });
     updateFilters({ [category]: next });
   };
 
-  const handleToggle = (key: string) => {
-    const next = !(filters as any)[key];
+  const handleToggle = (key: keyof FilterState) => {
+    const next = !filters[key];
     setFilters({ ...filters, [key]: next });
     updateFilters({ [key]: next });
   };

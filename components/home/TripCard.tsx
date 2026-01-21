@@ -43,9 +43,9 @@ export default function TripCard({ trip }: TripCardProps) {
       await toggleWishlist(trip.id, action);
       setIsWishlisted(!isWishlisted);
       toast.success(
-        isWishlisted ? "Removed from wishlist" : "Added to wishlist"
+        isWishlisted ? "Removed from wishlist" : "Added to wishlist",
       );
-    } catch (error) {
+    } catch {
       toast.error("Failed to update wishlist");
     }
   };

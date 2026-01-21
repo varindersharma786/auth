@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, MapPin, Calendar as CalendarIcon } from "lucide-react";
-import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
 
 export function SearchBar() {
@@ -11,13 +11,13 @@ export function SearchBar() {
   const searchParams = useSearchParams();
 
   const [keyword, setKeyword] = React.useState(
-    searchParams.get("keyword") || ""
+    searchParams.get("keyword") || "",
   );
   const [dateFrom, setDateFrom] = React.useState(
-    searchParams.get("date_range_from") || ""
+    searchParams.get("date_range_from") || "",
   );
   const [dateTo, setDateTo] = React.useState(
-    searchParams.get("date_range_to") || ""
+    searchParams.get("date_range_to") || "",
   );
 
   const handleSearch = (e: React.FormEvent) => {
