@@ -1,16 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Tour } from "@/lib/api";
-import api from "@/lib/api";
+import { api } from "@/lib/api";
 
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-
-// import { RoomConfigurationStep } from "./steps/RoomConfigurationStep";
-// import { TravellerDetailsStep } from "./steps/TravellerDetailsStep";
 import { TripExtrasStep } from "./steps/TripExtrasStep";
 import { PaymentStep } from "./steps/PaymentStep";
 import { BookingSidebar } from "./BookingSidebar";
