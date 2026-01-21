@@ -194,12 +194,17 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
   const onSubmit = async (data: BookingFormValues) => {
     console.log("Booking submitted:", data);
     try {
+      // Get start and end dates from selected departure
+      const selectedDeparture = departures.find(dep => dep.id === data.departureId);
+      
       // Submit booking to backend
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tourId: tour.id,
+          startDate: selectedDeparture?.departureDate || new Date().toISOString(),
+          endDate: selectedDeparture?.endDate || new Date().toISOString(),
           ...data,
         }),
       });
@@ -233,7 +238,7 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
       <div className="flex justify-center mb-8">
         <div className="flex items-center gap-4 relative">
           {/* Connecting line */}
-          <div className="absolute top-1/2 left-0 w-full h-[1px] bg-border -z-10" />
+          <div className="absolute top-1/2 left-0 w-full h-[1px] bg-gray-200 dark:bg-gray-700 -z-10" />
 
           {steps.map((step) => {
             const isCompleted = currentStep > step.id;

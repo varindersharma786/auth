@@ -34,7 +34,7 @@ export const PaymentStep = ({ onBack, tour }: PaymentStepProps) => {
   const addOns = watch("addOns");
   const insuranceRequired = watch("insuranceRequired");
   const numberOfTravelers = watch("numberOfTravelers");
-  const donationAmount = 0; // donationAmount is not part of the form schema, so we'll use a fixed value for now
+  const donationAmount = watch("donationAmount") || 0;
 
   const { currency, currencySymbol, exchangeRate } = useCurrency();
 
@@ -60,7 +60,7 @@ export const PaymentStep = ({ onBack, tour }: PaymentStepProps) => {
     }
     
     // Calculate total
-    const total = (basePrice + roomPrice + addOnsPrice) * (numberOfTravelers || 1) + donationAmount;
+    const total = (basePrice + roomPrice + addOnsPrice) * (numberOfTravelers || 1) + (donationAmount || 0);
     return total;
   };
 
@@ -188,14 +188,19 @@ export const PaymentStep = ({ onBack, tour }: PaymentStepProps) => {
                   createOrder={async (data, actions) => {
                     // Prepare booking details
                     const bookingData = getValues();
+                    
+                    // Get start and end dates from selected departure
+                    const selectedDeparture = await fetch(
+                      `${process.env.NEXT_PUBLIC_API_URL}/api/departures/${bookingData.departureId}`
+                    ).then(res => res.json()).catch(() => null);
+                    
                     const { orderID, bookingID } = await createPaymentOrder({
                       tourId: tour.id,
+                      startDate: selectedDeparture?.departureDate || new Date().toISOString(),
+                      endDate: selectedDeparture?.endDate || new Date().toISOString(),
                       ...bookingData,
                       totalPrice: convertedPrice,
                       currency: currency,
-                      startDate: new Date().toISOString(), // Demo: using current date, should be from props/selection
-                      endDate: new Date().toISOString(),
-                      numGuests: 1, // Demo
                     });
                     setCurrentBookingId(bookingID);
                     return orderID;
