@@ -37,6 +37,7 @@
     "cities.json": "^1.1.50",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.25.0",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
