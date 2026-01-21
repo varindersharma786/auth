@@ -191,7 +191,13 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
     },
   });
 
-  const { handleSubmit, trigger, watch, setValue } = methods;
+  const {
+    handleSubmit,
+    trigger,
+    watch,
+    setValue,
+    formState: { errors },
+  } = methods;
 
   const numberOfTravelers = watch("numberOfTravelers");
   const travelers = watch("travelers");
@@ -264,8 +270,32 @@ export const BookingClient = ({ tour }: BookingClientProps) => {
       setCurrentStep((prev) => prev + 1);
       window.scrollTo(0, 0);
     } else {
-      toast.error("Please fill in all required fields", {
-        description: "Check for any error messages on the form.",
+      // Debug validation errors
+      console.log("Validation errors:", methods.formState.errors);
+
+      const errorPaths: string[] = [];
+      const getErrorPaths = (obj: any, path = "") => {
+        if (!obj) return;
+        if (obj.message && typeof obj.message === "string") {
+          errorPaths.push(`${path}: ${obj.message}`);
+          return;
+        }
+        Object.keys(obj).forEach((key) => {
+          if (key === "ref") return;
+          // Handle array errors differently if needed, but recursion covers it
+          getErrorPaths(obj[key], path ? `${path}.${key}` : key);
+        });
+      };
+
+      getErrorPaths(methods.formState.errors);
+
+      toast.error("Please check the following fields:", {
+        description:
+          errorPaths.slice(0, 3).join("\n") +
+          (errorPaths.length > 3
+            ? `\nAnd ${errorPaths.length - 3} more...`
+            : ""),
+        duration: 5000,
       });
     }
   };
