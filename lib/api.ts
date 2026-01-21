@@ -82,6 +82,8 @@ export interface Tour {
   highlight: Highlight[];
   accommodation: Accommodation[];
   tripExtras: TripExtra[];
+  reviews?: { rating: number }[];
+  physicalRating?: number;
 }
 
 // Input types where ID is optional for nested items (for creation/updates)

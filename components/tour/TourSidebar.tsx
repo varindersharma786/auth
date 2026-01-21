@@ -98,13 +98,13 @@ export default function TourSidebar({ tour }: TourSidebarProps) {
                       Available
                     </span>
                   </div>
-                )
+                ),
               )}
             </div>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
-          <Link href={localizeLink(`/book/${tour.id}`)} className="w-full">
+          <Link href={localizeLink(`/book/${tour.slug}`)} className="w-full">
             <Button className="w-full text-lg py-6 shadow-lg shadow-primary/20">
               Book Now
             </Button>

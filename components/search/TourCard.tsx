@@ -7,13 +7,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 // import { cn } from "@/lib/utils";
 
+import { Tour } from "@/lib/api";
+
 interface TourCardProps {
-  tour: any;
+  tour: Tour;
 }
 
 export function TourCard({ tour }: TourCardProps) {
   const averageRating =
-    tour.reviews.length > 0
+    tour.reviews && tour.reviews.length > 0
       ? (
           tour.reviews.reduce((acc: number, rev: any) => acc + rev.rating, 0) /
           tour.reviews.length
@@ -51,7 +53,7 @@ export function TourCard({ tour }: TourCardProps) {
           <div className="flex items-center gap-1 text-xs text-zinc-500 mb-1">
             <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
             <span className="font-semibold text-zinc-900">{averageRating}</span>
-            <span>({tour.reviews.length} reviews)</span>
+            <span>({tour.reviews?.length || 0} reviews)</span>
           </div>
 
           <Link href={`/en/tours/${tour.slug}`}>
@@ -88,7 +90,7 @@ export function TourCard({ tour }: TourCardProps) {
               <div
                 key={i}
                 className={`h-1 w-4 rounded-full ${
-                  i < tour.physicalRating ? "bg-zinc-800" : "bg-zinc-200"
+                  i < (tour.physicalRating || 0) ? "bg-zinc-800" : "bg-zinc-200"
                 }`}
               />
             ))}
