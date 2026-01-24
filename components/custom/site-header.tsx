@@ -1,21 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import {
-  CircleUserRound,
-  Heart,
-  PhoneCall,
-  Search,
-  ChevronDown,
-} from "lucide-react";
+import { CircleUserRound, Heart, Phone, Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useCurrency } from "@/context/CurrencyContext";
@@ -24,165 +11,100 @@ import MenuDrawer from "./menu-drawer";
 export function SiteHeader() {
   const { data: session } = authClient.useSession();
   const router = useRouter();
-  const { localizeLink, countryName } = useCurrency();
-
-  const handleSignOut = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push(localizeLink("/auth/login"));
-        },
-      },
-    });
-  };
+  const { localizeLink } = useCurrency();
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white">
-      {/* Top Utility Bar */}
-      <div className="bg-[#2D2424] text-white py-2 px-6">
-        <div className="max-w-7xl mx-auto flex justify-between items-center text-xs font-bold uppercase tracking-widest">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
-              <Search className="h-3.5 w-3.5" />
-              <span>Search trips...</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <PhoneCall className="h-3.5 w-3.5" />
-              <span>1800 123 456</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <Link
-              href={localizeLink("/wishlist")}
-              className="flex items-center gap-2 hover:text-primary transition-colors"
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100">
+      <div className="max-w-[1400px] mx-auto flex h-20 items-center justify-between px-6">
+        {/* Left: Logo */}
+        <Link href={localizeLink("/")} className="flex items-center gap-2">
+          {/* Custom Intrepid Logo Icon Replica */}
+          <div className="w-8 h-8 rounded-full bg-[#D40028] flex items-center justify-center">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5 text-white"
             >
-              <Heart className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Wishlist</span>
-            </Link>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 hover:text-primary transition-colors outline-none uppercase">
-                  <CircleUserRound className="h-3.5 w-3.5" />
-                  <span>
-                    {session ? session.user.name.split(" ")[0] : "Account"}
-                  </span>
-                  <ChevronDown className="h-3 w-3" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                {session ? (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => router.push(localizeLink("/dashboard"))}
-                    >
-                      Dashboard
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => router.push(localizeLink("/auth/profile"))}
-                    >
-                      Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={handleSignOut}
-                      className="text-red-600"
-                    >
-                      Logout
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => router.push(localizeLink("/auth/login"))}
-                    >
-                      Login
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        router.push(localizeLink("/auth/register"))
-                      }
-                    >
-                      Register
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <div className="border-l border-white/20 pl-6 hidden md:block">
-              <span className="text-white/60 mr-2">Region:</span>
-              <span className="hover:text-primary cursor-pointer transition-colors">
-                {countryName}
-              </span>
-            </div>
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              <path
+                d="M12 2C14.5 2 16 4.5 16 8C16 11.5 12 16 12 16"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+            </svg>
           </div>
+          <span className="text-2xl font-bold text-[#D40028] tracking-tight">
+            Intrepid
+          </span>
+        </Link>
+
+        {/* Middle: Desktop Nav */}
+        <nav className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-zinc-700">
+          <Link
+            href={localizeLink("/destinations")}
+            className="hover:text-[#D40028] transition-colors"
+          >
+            Destinations
+          </Link>
+          <Link
+            href={localizeLink("/trip-styles")}
+            className="hover:text-[#D40028] transition-colors"
+          >
+            Ways to travel
+          </Link>
+          <Link
+            href={localizeLink("/deals")}
+            className="hover:text-[#D40028] transition-colors"
+          >
+            Deals
+          </Link>
+          <Link
+            href={localizeLink("/about")}
+            className="hover:text-[#D40028] transition-colors"
+          >
+            About
+          </Link>
+        </nav>
+
+        {/* Right: Icons (Desktop) */}
+        <div className="hidden lg:flex items-center gap-6">
+          <Link
+            href={localizeLink("/wishlist")}
+            className="text-zinc-700 hover:text-[#D40028] transition-colors"
+          >
+            <Heart className="h-6 w-6 stroke-[1.5]" />
+          </Link>
+
+          <Link
+            href={
+              session ? localizeLink("/dashboard") : localizeLink("/auth/login")
+            }
+            className="text-zinc-700 hover:text-[#D40028] transition-colors"
+          >
+            <CircleUserRound className="h-6 w-6 stroke-[1.5]" />
+          </Link>
+
+          <Link
+            href={localizeLink("/contact")}
+            className="text-zinc-700 hover:text-[#D40028] transition-colors"
+          >
+            <Phone className="h-6 w-6 stroke-[1.5]" />
+          </Link>
         </div>
-      </div>
 
-      {/* Main Navigation */}
-      <div className="border-b shadow-sm">
-        <div className="max-w-7xl mx-auto flex h-20 items-center justify-between px-6">
-          <div className="flex items-center gap-12">
-            {/* Logo */}
-            <Link href={localizeLink("/")} className="relative w-32 h-10">
-              <span className="text-2xl font-serif font-black tracking-tighter text-[#2D2424]">
-                INTREPID
-                <span className="text-primary font-light underline decoration-2 underline-offset-4 ml-1">
-                  TRAVEL
-                </span>
-              </span>
-            </Link>
-
-            {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-8 text-sm font-bold uppercase tracking-tight text-[#2D2424]">
-              <Link
-                href={localizeLink("/destinations")}
-                className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary pb-px"
-              >
-                Destinations
-              </Link>
-              <Link
-                href={localizeLink("/trip-styles")}
-                className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary pb-px"
-              >
-                Ways to Travel
-              </Link>
-              <Link
-                href={localizeLink("/tours")}
-                className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary pb-px"
-              >
-                Trips
-              </Link>
-              <Link
-                href={localizeLink("/deals")}
-                className="text-primary hover:opacity-80 transition-opacity flex items-center gap-1"
-              >
-                Deals
-              </Link>
-              <Link
-                href={localizeLink("/purpose")}
-                className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary pb-px"
-              >
-                Purpose
-              </Link>
-              <Link
-                href={localizeLink("/blog")}
-                className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary pb-px"
-              >
-                The Good Times
-              </Link>
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Button className="hidden md:flex rounded-full px-8 bg-primary hover:bg-primary/90 text-white font-bold py-6">
-              Enquire Now
-            </Button>
-            <div className="lg:hidden">
-              <MenuDrawer />
-            </div>
-          </div>
+        {/* Mobile Controls */}
+        <div className="flex lg:hidden items-center gap-4">
+          <button className="text-zinc-700">
+            <Search className="h-6 w-6" />
+          </button>
+          <MenuDrawer />
         </div>
       </div>
     </header>
