@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Edit, Trash2, Loader2, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
-import { ArticleCategory } from "@prisma/client";
+import { ArticleCategory } from "@/lib/api";
 
 export default function CategoriesAdminPage() {
   const [categories, setCategories] = useState<ArticleCategory[]>([]);

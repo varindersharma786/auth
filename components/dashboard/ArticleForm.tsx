@@ -17,7 +17,7 @@ import { Loader2, Save, X, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { RichTextEditor } from "../editor/rich-text-editor";
-import { ArticleCategory } from "@prisma/client";
+import { ArticleCategory } from "@/lib/api";
 
 interface ArticleFormProps {
   id?: string;

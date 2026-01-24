@@ -235,6 +235,16 @@ export const searchTours = async (params: Record<string, unknown>): Promise<{ to
 };
 
 // --- CMS & Articles ---
+export interface ArticleCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Article {
   id: string;
   slug: string;
@@ -242,7 +252,11 @@ export interface Article {
   subtitle?: string;
   content: string;
   image?: string;
-  category: string;
+  categoryId?: string;
+  category?: ArticleCategory;
+  isFeatured: boolean;
+  isDraft: boolean;
+  publishedAt?: string;
   author?: string;
   createdAt: string;
   updatedAt: string;
