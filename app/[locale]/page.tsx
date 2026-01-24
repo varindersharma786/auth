@@ -60,7 +60,9 @@ export default function Home() {
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      window.location.href = localizeLink(`/search?keyword=${encodeURIComponent(searchQuery)}`);
+      window.location.href = localizeLink(
+        `/search?keyword=${encodeURIComponent(searchQuery)}`,
+      );
     }
   };
 
@@ -72,14 +74,12 @@ export default function Home() {
     );
   }
 
-  const heroTitle =
-    heroBanner?.title || "Only Intrepid";
+  const heroTitle = heroBanner?.title || "Only Intrepid";
   const heroSubtitle =
-    heroBanner?.subtitle ||
-    "Real and remarkable small group trips worldwide.";
+    heroBanner?.subtitle || "Real and remarkable small group trips worldwide.";
   const heroImage =
     heroBanner?.imageUrl ||
-    "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=2000";
+    "https://images.unsplash.com/photo-1504218055620-379e5b5c9006?q=80&w=2500&auto=format&fit=crop"; // Vietnam Halong Bay or similar global image
   const heroCtaText = heroBanner?.ctaText || "Where to next?";
   const heroCtaUrl = heroBanner?.ctaUrl || "/destinations";
 
@@ -138,7 +138,7 @@ export default function Home() {
                     href={localizeLink("/destinations")}
                     className="hover:text-white transition-colors underline underline-offset-4"
                   >
-                    Browse by destination
+                    View all destinations
                   </Link>
                   <span className="text-white/50">•</span>
                   <Link
@@ -182,12 +182,18 @@ export default function Home() {
               </div>
               <div>
                 <MapPin className="h-8 w-8 text-primary mx-auto mb-3" />
-                <p className="text-sm font-bold text-zinc-900">100+ destinations</p>
-                <p className="text-xs text-zinc-600 mt-1">Across all continents</p>
+                <p className="text-sm font-bold text-zinc-900">
+                  100+ countries
+                </p>
+                <p className="text-xs text-zinc-600 mt-1">
+                  1000s of experiences
+                </p>
               </div>
               <div>
                 <Calendar className="h-8 w-8 text-primary mx-auto mb-3" />
-                <p className="text-sm font-bold text-zinc-900">Flexible booking</p>
+                <p className="text-sm font-bold text-zinc-900">
+                  Flexible booking
+                </p>
                 <p className="text-xs text-zinc-600 mt-1">Free cancellation</p>
               </div>
             </div>
@@ -225,7 +231,7 @@ export default function Home() {
                       <Image
                         src={
                           dest.image ||
-                          "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=600"
+                          "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=600"
                         }
                         alt={dest.name}
                         fill
@@ -270,7 +276,9 @@ export default function Home() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-zinc-500 mb-4">No featured tours available</p>
+                <p className="text-zinc-500 mb-4">
+                  No featured tours available
+                </p>
                 <Link href={localizeLink("/tours")}>
                   <Button>Browse all tours</Button>
                 </Link>
@@ -295,10 +303,10 @@ export default function Home() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-zinc-900 mb-4">
-                Why travel with us
+                What sets us apart
               </h2>
               <p className="text-zinc-600 text-lg max-w-2xl mx-auto">
-                We&apos;re committed to creating meaningful travel experiences
+                We&apos;re all about sharing the joy of travel
               </p>
             </div>
 
@@ -308,10 +316,11 @@ export default function Home() {
                   <Users className="h-10 w-10 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold text-zinc-900">
-                  Small group adventures
+                  Small group experts
                 </h3>
                 <p className="text-zinc-600">
-                  Travel with like-minded people in groups of 12 or fewer
+                  We’ve specialised in real, rare and remarkable small group
+                  adventures since 1989.
                 </p>
               </div>
 
@@ -320,10 +329,11 @@ export default function Home() {
                   <MapPin className="h-10 w-10 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold text-zinc-900">
-                  Local experiences
+                  Immersive experiences
                 </h3>
                 <p className="text-zinc-600">
-                  Immerse yourself in local culture with expert guides
+                  Uncover authentic local experiences that connect you to the
+                  heart of a place.
                 </p>
               </div>
 
@@ -332,10 +342,11 @@ export default function Home() {
                   <Star className="h-10 w-10 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold text-zinc-900">
-                  Responsible travel
+                  Locally based leaders
                 </h3>
                 <p className="text-zinc-600">
-                  Supporting communities and protecting the planet
+                  Our passionate leaders are genuinely connected to the places
+                  we go and the people we meet.
                 </p>
               </div>
             </div>

@@ -36,15 +36,15 @@ export default function SiteFooter() {
               href={localizeLink("/")}
               className="text-3xl font-serif font-black tracking-tighter"
             >
-              AFRICA
+              INTREPID
               <span className="text-primary font-light underline decoration-2 underline-offset-4 ml-1">
-                TOURS
+                TRAVEL
               </span>
             </Link>
             <div className="space-y-4">
               <p className="text-zinc-400 text-sm font-medium leading-relaxed">
-                Get the latest Africa travel inspiration, news and exclusive
-                offers delivered straight to your inbox.
+                Get the latest travel inspiration, news and exclusive offers
+                delivered straight to your inbox.
               </p>
               <div className="flex gap-2">
                 <div className="relative flex-1">
@@ -66,47 +66,47 @@ export default function SiteFooter() {
           <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
               <h4 className="text-xs font-bold uppercase tracking-[0.2em] mb-6 text-white/50">
-                Adventures
+                Destinations
               </h4>
               <ul className="space-y-4 text-sm font-medium">
                 <li>
                   <Link
-                    href={localizeLink("/destinations/kenya")}
+                    href={localizeLink("/destinations/peru")}
                     className="hover:text-primary transition-colors"
                   >
-                    Kenya Safaris
+                    Peru
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href={localizeLink("/destinations/tanzania")}
+                    href={localizeLink("/destinations/vietnam")}
                     className="hover:text-primary transition-colors"
                   >
-                    Tanzania Tours
+                    Vietnam
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href={localizeLink("/destinations/south-africa")}
+                    href={localizeLink("/destinations/italy")}
                     className="hover:text-primary transition-colors"
                   >
-                    South Africa trips
+                    Italy
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href={localizeLink("/destinations/namibia")}
+                    href={localizeLink("/destinations/japan")}
                     className="hover:text-primary transition-colors"
                   >
-                    Namibia Overland
+                    Japan
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href={localizeLink("/destinations/botswana")}
+                    href={localizeLink("/destinations/morocco")}
                     className="hover:text-primary transition-colors"
                   >
-                    Botswana Wildlife
+                    Morocco
                   </Link>
                 </li>
               </ul>
@@ -215,7 +215,7 @@ export default function SiteFooter() {
                     href={localizeLink("/blog")}
                     className="hover:text-primary transition-colors"
                   >
-                    The Road Ahead
+                    The Good Times
                   </Link>
                 </li>
                 <li>
@@ -268,7 +268,7 @@ export default function SiteFooter() {
               </div>
             </div>
             <div className="hidden sm:block text-zinc-500 text-xs font-medium">
-              © 2026 Africa Tours & Holidays. All rights reserved.
+              © 2026 Intrepid Travel. All rights reserved.
             </div>
           </div>
 
@@ -297,7 +297,7 @@ export default function SiteFooter() {
             <div className="flex items-center gap-4 border-l border-white/10 pl-8">
               <Select
                 value={Object.keys(COUNTRY_MAP).find(
-                  (key) => COUNTRY_MAP[key].name === countryName
+                  (key) => COUNTRY_MAP[key].name === countryName,
                 )}
                 onValueChange={setCountry}
               >

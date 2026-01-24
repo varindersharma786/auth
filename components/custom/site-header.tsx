@@ -127,9 +127,9 @@ export function SiteHeader() {
             {/* Logo */}
             <Link href={localizeLink("/")} className="relative w-32 h-10">
               <span className="text-2xl font-serif font-black tracking-tighter text-[#2D2424]">
-                AFRICA
+                INTREPID
                 <span className="text-primary font-light underline decoration-2 underline-offset-4 ml-1">
-                  TOURS
+                  TRAVEL
                 </span>
               </span>
             </Link>
@@ -146,13 +146,13 @@ export function SiteHeader() {
                 href={localizeLink("/trip-styles")}
                 className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary pb-px"
               >
-                Trip Styles
+                Ways to Travel
               </Link>
               <Link
                 href={localizeLink("/tours")}
                 className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary pb-px"
               >
-                Trip Search
+                Trips
               </Link>
               <Link
                 href={localizeLink("/deals")}
@@ -170,7 +170,7 @@ export function SiteHeader() {
                 href={localizeLink("/blog")}
                 className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary pb-px"
               >
-                Road Ahead
+                The Good Times
               </Link>
             </nav>
           </div>
