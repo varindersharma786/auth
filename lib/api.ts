@@ -256,6 +256,8 @@ export interface Article {
   category?: ArticleCategory;
   isFeatured: boolean;
   isDraft: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
   publishedAt?: string;
   author?: string;
   createdAt: string;
