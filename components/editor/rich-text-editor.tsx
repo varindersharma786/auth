@@ -43,6 +43,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
           "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[300px] p-4",
       },
     },
+    immediatelyRender: false,
   });
 
   // Watch for external content changes (e.g., initial load)
