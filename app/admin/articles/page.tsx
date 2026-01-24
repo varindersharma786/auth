@@ -65,11 +65,18 @@ export default function ArticlesAdminPage() {
             Manage blog posts, stories, and highlights.
           </p>
         </div>
-        <Link href="/admin/articles/new">
-          <Button className="rounded-full shadow-lg">
-            <Plus className="mr-2 h-4 w-4" /> New Article
-          </Button>
-        </Link>
+        <div className="flex gap-4">
+          <Link href="/admin/articles/categories">
+            <Button variant="outline" className="rounded-full">
+              Manage Categories
+            </Button>
+          </Link>
+          <Link href="/admin/articles/new">
+            <Button className="rounded-full shadow-lg">
+              <Plus className="mr-2 h-4 w-4" /> New Article
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <div className="border rounded-xl bg-white shadow-sm overflow-hidden">
@@ -103,8 +110,10 @@ export default function ArticlesAdminPage() {
                     </div>
                   </TableCell>
                   <TableCell>
+                    {/* @ts-ignore */}
                     <span className="text-xs font-bold uppercase tracking-wider bg-zinc-100 px-2 py-1 rounded">
-                      {article.category}
+                      {/* @ts-ignore */}
+                      {article.category?.name || "Uncategorized"}
                     </span>
                   </TableCell>
                   <TableCell>

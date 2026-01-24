@@ -5,7 +5,6 @@ import { Article, api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -17,44 +16,60 @@ import { Switch } from "@/components/ui/switch";
 import { Loader2, Save, X, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { RichTextEditor } from "../editor/rich-text-editor";
+import { ArticleCategory } from "@prisma/client";
 
 interface ArticleFormProps {
   id?: string;
 }
 
-const CATEGORIES = ["HIGHLIGHT", "INSPIRATION", "PURPOSE", "NEWS"];
-
 export default function ArticleForm({ id }: ArticleFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(!!id);
   const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState<Partial<Article>>({
+  const [categories, setCategories] = useState<ArticleCategory[]>([]);
+  const [formData, setFormData] = useState<
+    Partial<Article & { categoryId: string }>
+  >({
     title: "",
     slug: "",
-    category: "HIGHLIGHT",
+    categoryId: "",
     content: "",
     isDraft: true,
+    isFeatured: false,
   } as any);
 
   useEffect(() => {
-    if (id) {
-      const fetchArticle = async () => {
-        try {
-          const { data } = await api.get(`/api/cms/articles/${id}`); // We might need a getById admin route or use slug if we have it
-          // For simplicity, let's assume we can get by ID or filter from list
-          setFormData(data);
-        } catch (error) {
-          toast.error("Failed to load article");
-        } finally {
-          setLoading(false);
+    const fetchData = async () => {
+      try {
+        const [categoriesRes, articleRes] = await Promise.all([
+          api.get("/api/cms/categories"),
+          id
+            ? api.get(`/api/cms/admin/articles/${id}`)
+            : Promise.resolve({ data: null }),
+        ]);
+
+        setCategories(categoriesRes.data);
+
+        if (articleRes.data) {
+          setFormData(articleRes.data);
         }
-      };
-      fetchArticle();
-    }
+      } catch (error) {
+        toast.error("Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.categoryId) {
+      toast.error("Please select a category");
+      return;
+    }
+
     setSaving(true);
     try {
       if (id) {
@@ -89,7 +104,7 @@ export default function ArticleForm({ id }: ArticleFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-8 max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-sm border"
+      className="space-y-8 max-w-5xl mx-auto p-8 bg-white rounded-2xl shadow-sm border"
     >
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">
@@ -132,23 +147,25 @@ export default function ArticleForm({ id }: ArticleFormProps) {
         <div className="space-y-2">
           <Label>Category</Label>
           <Select
-            value={formData.category}
-            onValueChange={(val) => setFormData({ ...formData, category: val })}
+            value={formData.categoryId || formData.category?.id}
+            onValueChange={(val) =>
+              setFormData({ ...formData, categoryId: val })
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
-              {CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
+              {categories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id}>
+                  {cat.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Image URL</Label>
+          <Label>Cover Image URL</Label>
           <div className="flex gap-2">
             <Input
               value={formData.image || ""}
@@ -176,34 +193,51 @@ export default function ArticleForm({ id }: ArticleFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label>Content (Markdown support)</Label>
-        <Textarea
-          required
-          className="min-h-[300px] font-mono text-sm"
-          value={formData.content}
-          onChange={(e) =>
-            setFormData({ ...formData, content: e.target.value })
-          }
-          placeholder="Write your article content here..."
+        <Label className="mb-2 block">Content</Label>
+        <RichTextEditor
+          content={formData.content || ""}
+          onChange={(content) => setFormData({ ...formData, content })}
         />
       </div>
 
-      <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl">
-        <div className="space-y-0.5">
-          <Label>Draft Status</Label>
-          <p className="text-xs text-muted-foreground">
-            Drafts are only visible to admins.
-          </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
+          <div className="space-y-0.5">
+            <Label>Draft Status</Label>
+            <p className="text-xs text-muted-foreground">
+              Drafts are only visible to admins.
+            </p>
+          </div>
+          <Switch
+            checked={formData.isDraft}
+            onCheckedChange={(val) =>
+              setFormData({ ...formData, isDraft: val })
+            }
+          />
         </div>
 
-        <Switch
-          checked={formData.isDraft}
-          onCheckedChange={(val) => setFormData({ ...formData, isDraft: val })}
-        />
+        <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border">
+          <div className="space-y-0.5">
+            <Label>Featured Article</Label>
+            <p className="text-xs text-muted-foreground">
+              Highlight this article on the homepage.
+            </p>
+          </div>
+          <Switch
+            checked={formData.isFeatured}
+            onCheckedChange={(val) =>
+              setFormData({ ...formData, isFeatured: val })
+            }
+          />
+        </div>
       </div>
 
-      <div className="flex justify-end gap-4">
-        <Button type="submit" className="rounded-full px-10" disabled={saving}>
+      <div className="flex justify-end gap-4 pt-4">
+        <Button
+          type="submit"
+          className="rounded-full px-10 h-12 text-base shadow-lg hover:shadow-xl transition-all"
+          disabled={saving}
+        >
           {saving ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (

@@ -11,6 +11,7 @@ import {
   ChevronRight,
   User,
   Map,
+  Book,
 } from "lucide-react";
 
 import {
@@ -68,6 +69,11 @@ const items = [
     title: "Payments",
     url: "/admin/payments",
     icon: CreditCard,
+  },
+  {
+    title: "articles",
+    url: "/admin/articles",
+    icon: Book,
   },
   {
     title: "Profile",
